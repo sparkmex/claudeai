@@ -68,9 +68,29 @@
       border-radius: 16px;
       padding: 30px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      height: fit-content;
+      max-height: 85vh;
+      overflow-y: auto;
       position: sticky;
       top: 20px;
+    }
+
+    /* Scroll bar personalizado */
+    .form-section::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .form-section::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .form-section::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.4);
+      border-radius: 10px;
+    }
+
+    .form-section::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 126, 234, 0.6);
     }
 
     .section-title {
@@ -310,6 +330,23 @@
       border-radius: 12px;
       font-size: 0.75rem;
       color: #9ca3af;
+    }
+
+    .video-link {
+      display: inline-block;
+      padding: 8px 16px;
+      background: rgba(52, 211, 153, 0.2);
+      color: #6ee7b7;
+      text-decoration: none;
+      border-radius: 8px;
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .video-link:hover {
+      background: rgba(52, 211, 153, 0.3);
+      border-color: rgba(52, 211, 153, 0.5);
+      transform: translateY(-2px);
     }
 
     .challenge-actions {
@@ -659,8 +696,15 @@
 <body>
   <div class="container">
     <header>
-      <h1>🚀 Challenge Manager Academy</h1>
-      <p class="subtitle">Gestiona tus desafíos de programación</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div>
+          <h1>🚀 Challenge Manager Academy</h1>
+          <p class="subtitle">Gestiona tus desafíos de programación</p>
+        </div>
+        <button class="btn btn-secondary" onclick="toggleAdminPanel()" style="height: fit-content; padding: 10px 20px;">
+          ⚙️ Admin
+        </button>
+      </div>
     </header>
 
     <div class="main-content">
@@ -734,6 +778,16 @@
             <input type="text" id="tags" placeholder="array, loops, recursion">
           </div>
 
+          <div class="form-group">
+            <label>🎥 Video Demostración (URL)</label>
+            <input type="text" id="video_demostracion" placeholder="https://youtube.com/watch?v=... (Deja vacío para 'No disponible')">
+          </div>
+
+          <div class="form-group">
+            <label>📚 Ruta de Aprendizaje</label>
+            <input type="text" id="path" placeholder="Ej: Python Basics > Loops > For Loops (Opcional)">
+          </div>
+
           <button type="submit" class="btn btn-primary">
             <span id="btnText">Crear Challenge</span>
           </button>
@@ -768,6 +822,15 @@
               <option value="Go">Go</option>
               <option value="Rust">Rust</option>
               <option value="SQL">SQL</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">📊 Complejidad:</span>
+            <select id="filterComplexity" class="filter-input">
+              <option value="">Todos</option>
+              <option value="Fácil">Fácil</option>
+              <option value="Medio">Medio</option>
+              <option value="Difícil">Difícil</option>
             </select>
           </div>
           <button class="btn-clear-filters" onclick="clearFilters()">✕ Limpiar</button>
@@ -825,6 +888,11 @@
         <div class="modal-section-title">🏷️ Tags</div>
         <div class="modal-section-content" id="modalTags"></div>
       </div>
+
+      <div class="modal-section" id="videoSection" style="display: none;">
+        <div class="modal-section-title">🎥 Video Demostración</div>
+        <div class="modal-section-content" id="modalVideo"></div>
+      </div>
     </div>
   </div>
 
@@ -833,6 +901,126 @@
     <div class="lightbox-content">
       <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
       <img id="lightboxImage" class="lightbox-image" alt="Imagen a tamaño completo">
+    </div>
+  </div>
+
+  <!-- Modal de Administración -->
+  <div id="adminModal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h2 class="modal-title">⚙️ Administración de Base de Datos</h2>
+        <button class="modal-close" onclick="toggleAdminPanel()">&times;</button>
+      </div>
+
+      <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+        <!-- Estadísticas -->
+        <div class="modal-section">
+          <div class="modal-section-title">📊 Estadísticas</div>
+          <div class="modal-section-content" id="adminStats" style="font-size: 0.95rem;">
+            <p>Cargando estadísticas...</p>
+          </div>
+        </div>
+
+        <!-- Cargar Datos -->
+        <div class="modal-section">
+          <div class="modal-section-title">📥 Cargar Datos</div>
+          <div class="modal-section-content">
+            <p style="font-size: 0.9rem; margin-bottom: 10px; color: #a0a0a0;">Selecciona un archivo para cargar los datos:</p>
+            <select id="availableFiles" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #e4e4e4; margin-bottom: 10px;">
+              <option value="">Cargando archivos...</option>
+            </select>
+            <button class="btn btn-primary" onclick="loadDataFromFile()" style="width: 100%;">
+              📂 Cargar Datos
+            </button>
+          </div>
+        </div>
+
+        <!-- Respaldo de Base de Datos -->
+        <div class="modal-section">
+          <div class="modal-section-title">💾 Respaldo de Base de Datos</div>
+          <div class="modal-section-content">
+            <p style="font-size: 0.9rem; color: #a0a0a0; margin-bottom: 10px;">Descargar respaldo completo en formato SQL (DDL + INSERTS):</p>
+            <button class="btn btn-primary" onclick="downloadBackup()" style="width: 100%;">
+              📥 Descargar Respaldo SQL
+            </button>
+          </div>
+        </div>
+
+        <!-- Restaurar desde Respaldo -->
+        <div class="modal-section">
+          <div class="modal-section-title">♻️ Restaurar desde Respaldo</div>
+          <div class="modal-section-content">
+            <!-- Tabs para cambiar entre opciones -->
+            <div style="display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+              <button class="restore-tab active" onclick="switchRestoreTab('server')" style="flex: 1; padding: 8px; background: none; border: none; color: #e4e4e4; cursor: pointer; border-bottom: 2px solid transparent; padding-bottom: 10px;">
+                🗂️ Desde Servidor
+              </button>
+              <button class="restore-tab" onclick="switchRestoreTab('local')" style="flex: 1; padding: 8px; background: none; border: none; color: #a0a0a0; cursor: pointer; border-bottom: 2px solid transparent; padding-bottom: 10px;">
+                📁 Desde Local
+              </button>
+            </div>
+
+            <!-- Tab 1: Desde Servidor -->
+            <div id="restore-server-tab" style="display: block;">
+              <p style="font-size: 0.9rem; color: #a0a0a0; margin-bottom: 10px;">Archivos de respaldo disponibles:</p>
+              <select id="backupFilesList" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #e4e4e4; margin-bottom: 10px; font-size: 0.9rem;">
+                <option value="">Cargando archivos...</option>
+              </select>
+              <div id="backupFileInfo" style="font-size: 0.85rem; color: #a0a0a0; margin-bottom: 10px; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 4px; display: none;">
+                <div>Tamaño: <span id="backupFileSize"></span></div>
+                <div>Modificado: <span id="backupFileDate"></span></div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <button class="btn btn-secondary" onclick="downloadSelectedBackup()" style="width: 100%;">
+                  📥 Descargar
+                </button>
+                <button class="btn btn-primary" onclick="restoreFromBackup()" style="width: 100%;">
+                  ♻️ Restaurar
+                </button>
+              </div>
+            </div>
+
+            <!-- Tab 2: Desde Local -->
+            <div id="restore-local-tab" style="display: none;">
+              <p style="font-size: 0.9rem; color: #a0a0a0; margin-bottom: 10px;">Selecciona un archivo SQL de tu computadora:</p>
+              <input type="file" id="restoreFileInput" accept=".sql" style="width: 100%; padding: 8px; margin-bottom: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #e4e4e4;">
+              <div id="restoreFileInfo" style="font-size: 0.85rem; color: #a0a0a0; margin-bottom: 10px; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 4px; display: none;">
+                <div>Archivo: <span id="restoreFileName"></span></div>
+                <div>Tamaño: <span id="restoreFileSize"></span></div>
+              </div>
+              <button class="btn btn-primary" onclick="restoreFromLocalFile()" style="width: 100%;">
+                ♻️ Restaurar desde Archivo
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Limpiar Base de Datos -->
+        <div class="modal-section">
+          <div class="modal-section-title">🗑️ Limpiar Base de Datos</div>
+          <div class="modal-section-content">
+            <div style="margin-bottom: 10px;">
+              <p style="font-size: 0.9rem; color: #a0a0a0; margin-bottom: 8px;">Por lenguaje:</p>
+              <select id="languageClear" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #e4e4e4; margin-bottom: 8px;">
+                <option value="">Seleccionar lenguaje...</option>
+                <option value="Python">Python</option>
+                <option value="SQL">SQL</option>
+                <option value="JavaScript">JavaScript</option>
+                <option value="Java">Java</option>
+                <option value="C++">C++</option>
+              </select>
+              <button class="btn btn-danger" onclick="clearByLanguage()" style="width: 100%; margin-bottom: 10px;">
+                🗑️ Eliminar por Lenguaje
+              </button>
+            </div>
+            
+            <p style="font-size: 0.9rem; color: #a0a0a0; margin-bottom: 8px;">Todos los challenges:</p>
+            <button class="btn btn-danger" onclick="clearAllChallenges()" style="width: 100%;">
+              ⚠️ Eliminar TODOS los Challenges
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -853,6 +1041,7 @@
     document.getElementById('cancelBtn').addEventListener('click', resetForm);
     document.getElementById('filterText').addEventListener('input', applyFilters);
     document.getElementById('filterLanguage').addEventListener('change', applyFilters);
+    document.getElementById('filterComplexity').addEventListener('change', applyFilters);
     document.getElementById('imagenInput').addEventListener('change', handleImageSelect);
 
     async function loadChallenges() {
@@ -869,6 +1058,7 @@
     function applyFilters() {
       const textFilter = document.getElementById('filterText').value.toLowerCase();
       const languageFilter = document.getElementById('filterLanguage').value;
+      const complexityFilter = document.getElementById('filterComplexity').value;
 
       const filtered = allChallenges.filter(challenge => {
         const matchesText = 
@@ -876,8 +1066,9 @@
           (challenge.descripcion_challenge && challenge.descripcion_challenge.toLowerCase().includes(textFilter));
         
         const matchesLanguage = !languageFilter || challenge.lenguaje === languageFilter;
+        const matchesComplexity = !complexityFilter || challenge.complejidad === complexityFilter;
 
-        return matchesText && matchesLanguage;
+        return matchesText && matchesLanguage && matchesComplexity;
       });
 
       // Actualizar contador de resultados
@@ -885,7 +1076,7 @@
       const totalCount = allChallenges.length;
       const filteredCount = filtered.length;
       
-      if (filteredCount === totalCount && !textFilter && !languageFilter) {
+      if (filteredCount === totalCount && !textFilter && !languageFilter && !complexityFilter) {
         resultCount.textContent = `Resultados: ${totalCount}`;
       } else {
         resultCount.textContent = `Resultados: ${filteredCount} de ${totalCount}`;
@@ -897,6 +1088,7 @@
     function clearFilters() {
       document.getElementById('filterText').value = '';
       document.getElementById('filterLanguage').value = '';
+      document.getElementById('filterComplexity').value = '';
       applyFilters();
     }
 
@@ -958,6 +1150,8 @@
       formData.append('solucion_challenge', document.getElementById('solucion_challenge').value);
       formData.append('code_schema', document.getElementById('code_schema').value);
       formData.append('tags', document.getElementById('tags').value);
+      formData.append('video_demostracion', document.getElementById('video_demostracion').value);
+      formData.append('path', document.getElementById('path').value);
 
       const imagenInput = document.getElementById('imagenInput');
       if (imagenInput.files.length > 0) {
@@ -1004,6 +1198,8 @@
         document.getElementById('solucion_challenge').value = challenge.solucion_challenge || '';
         document.getElementById('code_schema').value = challenge.code_schema || '';
         document.getElementById('tags').value = challenge.tags || '';
+        document.getElementById('video_demostracion').value = challenge.video_demostracion || '';
+        document.getElementById('path').value = challenge.path || '';
 
         // Mostrar imagen si existe
         if (challenge.imagen_url) {
@@ -1039,6 +1235,8 @@
     function resetForm() {
       document.getElementById('challengeForm').reset();
       document.getElementById('challengeId').value = '';
+      document.getElementById('video_demostracion').value = '';
+      document.getElementById('path').value = '';
       document.getElementById('formTitle').textContent = '➕ Nuevo Challenge';
       document.getElementById('btnText').textContent = 'Crear Challenge';
       document.getElementById('cancelBtn').style.display = 'none';
@@ -1118,6 +1316,18 @@
           tagsSection.style.display = 'block';
         } else {
           tagsSection.style.display = 'none';
+        }
+
+        // Llenar video
+        const videoSection = document.getElementById('videoSection');
+        if (challenge.video_demostracion && challenge.video_demostracion !== 'No disponible') {
+          const videoHTML = `<a href="${challenge.video_demostracion}" target="_blank" class="video-link">▶️ Ver Video</a>`;
+          document.getElementById('modalVideo').innerHTML = videoHTML;
+          videoSection.style.display = 'block';
+        } else {
+          const videoHTML = `<span style="color: #999;">No disponible</span>`;
+          document.getElementById('modalVideo').innerHTML = videoHTML;
+          videoSection.style.display = 'block';
         }
 
         // Abrir modal
@@ -1251,6 +1461,404 @@
         closeLightbox();
       }
     });
+
+    // ===== FUNCIONES DE ADMINISTRACIÓN =====
+
+    function toggleAdminPanel() {
+      const modal = document.getElementById('adminModal');
+      modal.classList.toggle('active');
+      if (modal.classList.contains('active')) {
+        loadAdminStats();
+        loadAvailableFiles();
+        loadBackupFiles();
+      }
+    }
+
+    async function loadAdminStats() {
+      try {
+        const response = await fetch('http://localhost:3000/api/admin/stats');
+        const stats = await response.json();
+        
+        const statsHTML = `
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="background: rgba(102, 126, 234, 0.15); padding: 12px; border-radius: 6px; border-left: 3px solid #667eea;">
+              <div style="font-size: 0.85rem; color: #a0a0a0;">Total Challenges</div>
+              <div style="font-size: 1.5rem; font-weight: bold; color: #fff;">${stats.total_challenges}</div>
+            </div>
+            <div style="background: rgba(52, 211, 153, 0.15); padding: 12px; border-radius: 6px; border-left: 3px solid #6ee7b7;">
+              <div style="font-size: 0.85rem; color: #a0a0a0;">Lenguajes</div>
+              <div style="font-size: 1.5rem; font-weight: bold; color: #fff;">${stats.total_languages}</div>
+            </div>
+            <div style="background: rgba(34, 197, 94, 0.15); padding: 12px; border-radius: 6px; border-left: 3px solid #22c55e;">
+              <div style="font-size: 0.85rem; color: #a0a0a0;">Fácil</div>
+              <div style="font-size: 1.5rem; font-weight: bold; color: #22c55e;">${stats.easy_count}</div>
+            </div>
+            <div style="background: rgba(251, 146, 60, 0.15); padding: 12px; border-radius: 6px; border-left: 3px solid #fdba74;">
+              <div style="font-size: 0.85rem; color: #a0a0a0;">Medio</div>
+              <div style="font-size: 1.5rem; font-weight: bold; color: #fdba74;">${stats.medium_count}</div>
+            </div>
+            <div style="background: rgba(239, 68, 68, 0.15); padding: 12px; border-radius: 6px; border-left: 3px solid #ef4444; grid-column: 1 / 3;">
+              <div style="font-size: 0.85rem; color: #a0a0a0;">Difícil</div>
+              <div style="font-size: 1.5rem; font-weight: bold; color: #ef4444;">${stats.hard_count}</div>
+            </div>
+          </div>
+        `;
+        document.getElementById('adminStats').innerHTML = statsHTML;
+      } catch (error) {
+        document.getElementById('adminStats').innerHTML = `<p style="color: #ef4444;">Error al cargar estadísticas: ${error.message}</p>`;
+      }
+    }
+
+    async function loadAvailableFiles() {
+      try {
+        const response = await fetch('http://localhost:3000/api/admin/available-files');
+        const files = await response.json();
+        
+        const select = document.getElementById('availableFiles');
+        select.innerHTML = '<option value="">Seleccionar archivo...</option>';
+        
+        files.forEach(file => {
+          const option = document.createElement('option');
+          option.value = file.name;
+          option.textContent = `${file.type} - ${file.name}`;
+          select.appendChild(option);
+        });
+      } catch (error) {
+        const select = document.getElementById('availableFiles');
+        select.innerHTML = `<option>Error al cargar archivos: ${error.message}</option>`;
+      }
+    }
+
+    async function loadDataFromFile() {
+      const filename = document.getElementById('availableFiles').value;
+      
+      if (!filename) {
+        alert('Por favor selecciona un archivo');
+        return;
+      }
+
+      if (!confirm(`¿Deseas cargar los datos desde ${filename}?\n\nEsto agregará nuevos challenges a la base de datos.`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:3000/api/admin/load-data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          alert(data.message);
+          loadChallenges();
+          loadAdminStats();
+        } else {
+          const error = await response.json();
+          alert('Error: ' + error.error);
+        }
+      } catch (error) {
+        alert('Error al cargar datos: ' + error.message);
+      }
+    }
+
+    async function clearByLanguage() {
+      const language = document.getElementById('languageClear').value;
+      
+      if (!language) {
+        alert('Por favor selecciona un lenguaje');
+        return;
+      }
+
+      if (!confirm(`¿Estás seguro de que deseas eliminar TODOS los challenges de ${language}?\n\nEsta acción no se puede deshacer.`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/admin/clear-language/${language}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ confirm: true })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          alert(data.message);
+          loadChallenges();
+          loadAdminStats();
+          document.getElementById('languageClear').value = '';
+        } else {
+          const error = await response.json();
+          alert('Error: ' + error.error);
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    async function clearAllChallenges() {
+      if (!confirm('⚠️ ¿ESTÁS COMPLETAMENTE SEGURO?\n\nEsto eliminará TODOS los challenges de la base de datos.\n\nEsta acción NO se puede deshacer.')) {
+        return;
+      }
+
+      if (!confirm('Escribe "CONFIRMAR" para continuar. Si no quieres perder los datos, cancela ahora.')) {
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:3000/api/admin/clear-all', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ confirm: true })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          alert(`✅ ${data.message}\nEliminados: ${data.deleted} challenges`);
+          loadChallenges();
+          loadAdminStats();
+        } else {
+          const error = await response.json();
+          alert('Error: ' + error.error);
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    async function downloadBackup() {
+      try {
+        const response = await fetch('http://localhost:3000/api/admin/backup');
+        
+        if (response.ok) {
+          // Crear un blob con el contenido
+          const blob = await response.blob();
+          
+          // Crear un URL de descarga
+          const url = window.URL.createObjectURL(blob);
+          
+          // Crear un elemento <a> temporal para descargar
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `challenges_backup_${new Date().getTime()}.sql`;
+          document.body.appendChild(a);
+          a.click();
+          
+          // Limpiar
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+          
+          alert('✅ Respaldo descargado exitosamente');
+        } else {
+          const error = await response.json();
+          alert('Error: ' + error.error);
+        }
+      } catch (error) {
+        alert('Error al descargar respaldo: ' + error.message);
+      }
+    }
+
+    function switchRestoreTab(tab) {
+      // Actualizar visibilidad de tabs
+      document.getElementById('restore-server-tab').style.display = tab === 'server' ? 'block' : 'none';
+      document.getElementById('restore-local-tab').style.display = tab === 'local' ? 'block' : 'none';
+
+      // Actualizar estilos de botones
+      const buttons = document.querySelectorAll('.restore-tab');
+      buttons.forEach(btn => {
+        if ((tab === 'server' && btn.textContent.includes('Servidor')) || 
+            (tab === 'local' && btn.textContent.includes('Local'))) {
+          btn.style.color = '#e4e4e4';
+          btn.style.borderBottom = '2px solid #667eea';
+        } else {
+          btn.style.color = '#a0a0a0';
+          btn.style.borderBottom = '2px solid transparent';
+        }
+      });
+    }
+
+    // Manejar selección de archivo local
+    if (document.getElementById('restoreFileInput')) {
+      document.getElementById('restoreFileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const infoDiv = document.getElementById('restoreFileInfo');
+        
+        if (file) {
+          document.getElementById('restoreFileName').textContent = file.name;
+          document.getElementById('restoreFileSize').textContent = (file.size / 1024).toFixed(2) + ' KB';
+          infoDiv.style.display = 'block';
+        } else {
+          infoDiv.style.display = 'none';
+        }
+      });
+    }
+
+    async function loadBackupFiles() {
+      try {
+        const response = await fetch('http://localhost:3000/api/admin/backup-files');
+        const files = await response.json();
+        
+        const select = document.getElementById('backupFilesList');
+        select.innerHTML = '<option value="">Seleccionar archivo...</option>';
+        
+        if (files.length === 0) {
+          select.innerHTML = '<option disabled>No hay archivos de respaldo</option>';
+          return;
+        }
+        
+        files.forEach(file => {
+          const option = document.createElement('option');
+          option.value = file.name;
+          option.textContent = `${file.name} (${file.sizeKB} KB) - ${file.modifiedFormatted}`;
+          option.dataset.size = file.sizeKB;
+          option.dataset.date = file.modifiedFormatted;
+          select.appendChild(option);
+        });
+      } catch (error) {
+        const select = document.getElementById('backupFilesList');
+        select.innerHTML = `<option disabled>Error al cargar archivos: ${error.message}</option>`;
+      }
+    }
+
+    // Actualizar info del archivo seleccionado
+    if (document.getElementById('backupFilesList')) {
+      document.getElementById('backupFilesList').addEventListener('change', function() {
+        const select = this;
+        const infoDiv = document.getElementById('backupFileInfo');
+        
+        if (select.value) {
+          const option = select.options[select.selectedIndex];
+          document.getElementById('backupFileSize').textContent = option.dataset.size + ' KB';
+          document.getElementById('backupFileDate').textContent = option.dataset.date;
+          infoDiv.style.display = 'block';
+        } else {
+          infoDiv.style.display = 'none';
+        }
+      });
+    }
+
+    async function downloadSelectedBackup() {
+      const filename = document.getElementById('backupFilesList').value;
+      
+      if (!filename) {
+        alert('Por favor selecciona un archivo');
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/admin/backup-files/${filename}`);
+        
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+          
+          alert('✅ Archivo descargado exitosamente');
+        } else {
+          const error = await response.json();
+          alert('Error: ' + error.error);
+        }
+      } catch (error) {
+        alert('Error al descargar: ' + error.message);
+      }
+    }
+
+    async function restoreFromBackup() {
+      const filename = document.getElementById('backupFilesList').value;
+      
+      if (!filename) {
+        alert('Por favor selecciona un archivo para restaurar');
+        return;
+      }
+
+      if (!confirm(`⚠️ ¿ESTÁS SEGURO?\n\nEsto restaurará la base de datos desde:\n${filename}\n\nSe SOBRESCRIBIRÁN todos los datos actuales.\n\nEsta acción NO se puede deshacer sin un respaldo.`)) {
+        return;
+      }
+
+      if (!confirm('Escribe "RESTAURAR" para continuar. Esta es tu última oportunidad de cancelar.')) {
+        return;
+      }
+
+      try {
+        // Leer el archivo del servidor
+        const fileResponse = await fetch(`http://localhost:3000/api/admin/backup-files/${filename}`);
+        const sqlContent = await fileResponse.text();
+
+        // Enviar el contenido para restaurar
+        const restoreResponse = await fetch('http://localhost:3000/api/admin/restore', {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: sqlContent
+        });
+
+        if (restoreResponse.ok) {
+          const data = await restoreResponse.json();
+          alert(`✅ ${data.message}`);
+          setTimeout(() => {
+            location.reload();
+          }, 1500);
+        } else {
+          const error = await restoreResponse.json();
+          alert('Error: ' + error.error);
+        }
+      } catch (error) {
+        alert('Error al restaurar: ' + error.message);
+      }
+    }
+
+    async function restoreFromLocalFile() {
+      const fileInput = document.getElementById('restoreFileInput');
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        alert('Por favor selecciona un archivo para restaurar');
+        return;
+      }
+
+      if (!file.name.endsWith('.sql')) {
+        alert('Por favor selecciona un archivo .sql válido');
+        return;
+      }
+
+      if (!confirm(`⚠️ ¿ESTÁS SEGURO?\n\nEsto restaurará la base de datos desde:\n${file.name}\n\nSe SOBRESCRIBIRÁN todos los datos actuales.\n\nEsta acción NO se puede deshacer sin un respaldo.`)) {
+        return;
+      }
+
+      if (!confirm('Escribe "RESTAURAR" para continuar. Esta es tu última oportunidad de cancelar.')) {
+        return;
+      }
+
+      try {
+        // Leer el archivo localmente
+        const sqlContent = await file.text();
+
+        // Enviar el contenido para restaurar
+        const restoreResponse = await fetch('http://localhost:3000/api/admin/restore', {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: sqlContent
+        });
+
+        if (restoreResponse.ok) {
+          const data = await restoreResponse.json();
+          alert(`✅ ${data.message}`);
+          setTimeout(() => {
+            location.reload();
+          }, 1500);
+        } else {
+          const error = await restoreResponse.json();
+          alert('Error: ' + error.error);
+        }
+      } catch (error) {
+        alert('Error al restaurar: ' + error.message);
+      }
+    }
   </script>
 </body>
 </html>
