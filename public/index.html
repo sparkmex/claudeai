@@ -783,7 +783,7 @@
       <div class="modal-section" id="solutionSection" style="display: none;">
         <div class="modal-section-title">
           ✅ Solución
-          <button class="btn-copy" onclick="copyToClipboard('modalSolution')">📋 Copiar</button>
+          <button class="btn-copy" onclick="copyToClipboard('modalSolution', this)">📋 Copiar</button>
         </div>
         <div class="modal-section-content code" id="modalSolution"></div>
       </div>
@@ -791,7 +791,7 @@
       <div class="modal-section" id="schemaSection" style="display: none;">
         <div class="modal-section-title">
           📋 Code Schema
-          <button class="btn-copy" onclick="copyToClipboard('modalSchema')">📋 Copiar</button>
+          <button class="btn-copy" onclick="copyToClipboard('modalSchema', this)">📋 Copiar</button>
         </div>
         <div class="modal-section-content code" id="modalSchema"></div>
       </div>
@@ -1124,12 +1124,17 @@
       return highlighted;
     }
 
-    function copyToClipboard(elementId) {
+    function copyToClipboard(elementId, button) {
       const element = document.getElementById(elementId);
-      const text = element.innerText;
+      if (!element) {
+        alert('Elemento no encontrado');
+        return;
+      }
+
+      // Obtener el texto sin los tags HTML
+      const text = element.innerText || element.textContent;
 
       navigator.clipboard.writeText(text).then(() => {
-        const button = event.target;
         const originalText = button.textContent;
         button.textContent = '✅ Copiado!';
         button.classList.add('copied');
@@ -1138,8 +1143,9 @@
           button.textContent = originalText;
           button.classList.remove('copied');
         }, 2000);
-      }).catch(() => {
-        alert('Error al copiar el código');
+      }).catch((err) => {
+        console.error('Error al copiar:', err);
+        alert('Error al copiar el código. Intenta de nuevo.');
       });
     }
 
