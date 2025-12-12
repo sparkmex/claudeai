@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Challenge Manager - Academy</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e4e4e4;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #a0a0a0;
+      font-size: 1.1rem;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 30px;
+    }
+
+    .challenges-section {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .form-section {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #b0b0b0;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      font-family: 'Courier New', monospace;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .challenge-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .challenge-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .challenge-card:hover {
+      transform: translateX(4px);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(102, 126, 234, 0.3);
+    }
+
+    .challenge-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+
+    .challenge-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      flex: 1;
+    }
+
+    .challenge-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      background: rgba(102, 126, 234, 0.2);
+      color: #a8b7ff;
+      border: 1px solid rgba(102, 126, 234, 0.3);
+    }
+
+    .badge-language {
+      background: rgba(52, 211, 153, 0.2);
+      color: #6ee7b7;
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .badge-complexity {
+      background: rgba(251, 146, 60, 0.2);
+      color: #fdba74;
+      border-color: rgba(251, 146, 60, 0.3);
+    }
+
+    .challenge-description {
+      color: #b0b0b0;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .challenge-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .tag {
+      padding: 3px 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    .challenge-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 0.85rem;
+    }
+
+    .filters-section {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .filter-label {
+      color: #a0a0a0;
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .filter-input {
+      flex: 1;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .filter-input:focus {
+      outline: none;
+      border-color: #667eea;
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn-clear-filters {
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #a0a0a0;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .btn-clear-filters:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6b7280;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #667eea;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 800px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #a0a0a0;
+      font-size: 2rem;
+      cursor: pointer;
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.3s;
+    }
+
+    .modal-close:hover {
+      color: #fff;
+    }
+
+    .modal-section {
+      margin-bottom: 30px;
+    }
+
+    .modal-section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-copy {
+      background: rgba(102, 126, 234, 0.2);
+      color: #a8b7ff;
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: none;
+      letter-spacing: normal;
+      font-weight: 500;
+    }
+
+    .btn-copy:hover {
+      background: rgba(102, 126, 234, 0.3);
+      border-color: rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-copy.copied {
+      background: rgba(52, 211, 153, 0.2);
+      color: #6ee7b7;
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .modal-section-content {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 16px;
+      color: #b0b0b0;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .modal-section-content.code {
+      background: rgba(0, 0, 0, 0.5);
+      border-left: 3px solid #667eea;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 0.9rem;
+      overflow-x: auto;
+      padding: 16px;
+      line-height: 1.6;
+      color: #d4d4d4;
+    }
+
+    /* Syntax Highlighting */
+    .code-keyword { color: #569cd6; font-weight: 600; }
+    .code-string { color: #ce9178; }
+    .code-number { color: #b5cea8; }
+    .code-function { color: #dcdcaa; }
+    .code-comment { color: #6a9955; font-style: italic; }
+    .code-operator { color: #d4d4d4; }
+    .code-class { color: #4ec9b0; font-weight: 600; }
+
+    .modal-badges {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .modal-badge {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      background: rgba(102, 126, 234, 0.2);
+      color: #a8b7ff;
+      border: 1px solid rgba(102, 126, 234, 0.3);
+    }
+
+    .modal-badge.language {
+      background: rgba(52, 211, 153, 0.2);
+      color: #6ee7b7;
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .modal-badge.complexity {
+      background: rgba(251, 146, 60, 0.2);
+      color: #fdba74;
+      border-color: rgba(251, 146, 60, 0.3);
+    }
+
+    @media (max-width: 1024px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+
+      .form-section {
+        position: static;
+      }
+
+      .modal-content {
+        padding: 30px 20px;
+        width: 95%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🚀 Challenge Manager Academy</h1>
+      <p class="subtitle">Gestiona tus desafíos de programación</p>
+    </header>
+
+    <div class="main-content">
+      <div class="form-section">
+        <h2 class="section-title" id="formTitle">➕ Nuevo Challenge</h2>
+        <form id="challengeForm">
+          <input type="hidden" id="challengeId">
+          
+          <div class="form-group">
+            <label>Nombre del Challenge</label>
+            <input type="text" id="nombre_challenge" required>
+          </div>
+
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea id="descripcion_challenge" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Lenguaje</label>
+            <select id="lenguaje" required>
+              <option value="">Seleccionar...</option>
+              <option value="JavaScript">JavaScript</option>
+              <option value="Python">Python</option>
+              <option value="Java">Java</option>
+              <option value="C++">C++</option>
+              <option value="Go">Go</option>
+              <option value="Rust">Rust</option>
+              <option value="SQL">SQL</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Complejidad</label>
+            <select id="complejidad" required>
+              <option value="">Seleccionar...</option>
+              <option value="Fácil">Fácil</option>
+              <option value="Medio">Medio</option>
+              <option value="Difícil">Difícil</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Nivel</label>
+            <input type="text" id="nivel" placeholder="Ej: Beginner, Intermediate, Advanced">
+          </div>
+
+          <div class="form-group">
+            <label>Solución del Challenge</label>
+            <textarea id="solucion_challenge"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Code Schema</label>
+            <textarea id="code_schema"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Tags (separados por comas)</label>
+            <input type="text" id="tags" placeholder="array, loops, recursion">
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <span id="btnText">Crear Challenge</span>
+          </button>
+          
+          <button type="button" id="cancelBtn" class="btn btn-secondary" style="display: none; margin-top: 10px; width: 100%;">
+            Cancelar
+          </button>
+        </form>
+      </div>
+
+      <div class="challenges-section">
+        <h2 class="section-title">📚 Challenges</h2>
+        
+        <div class="filters-section">
+          <div class="filter-group">
+            <span class="filter-label">🔍 Buscar:</span>
+            <input type="text" id="filterText" class="filter-input" placeholder="Nombre o descripción...">
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">💻 Lenguaje:</span>
+            <select id="filterLanguage" class="filter-input">
+              <option value="">Todos</option>
+              <option value="JavaScript">JavaScript</option>
+              <option value="Python">Python</option>
+              <option value="Java">Java</option>
+              <option value="C++">C++</option>
+              <option value="Go">Go</option>
+              <option value="Rust">Rust</option>
+              <option value="SQL">SQL</option>
+            </select>
+          </div>
+          <button class="btn-clear-filters" onclick="clearFilters()">✕ Limpiar</button>
+        </div>
+
+        <div id="challengesList">
+          <div class="loading">Cargando challenges...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalChallenge" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Challenge</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <button class="btn btn-secondary btn-small" onclick="exportPDF()" style="width: auto;">
+          📄 Exportar PDF
+        </button>
+      </div>
+
+      <div class="modal-badges" id="modalBadges"></div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">📝 Descripción</div>
+        <div class="modal-section-content" id="modalDescription"></div>
+      </div>
+
+      <div class="modal-section" id="solutionSection" style="display: none;">
+        <div class="modal-section-title">
+          ✅ Solución
+          <button class="btn-copy" onclick="copyToClipboard('modalSolution')">📋 Copiar</button>
+        </div>
+        <div class="modal-section-content code" id="modalSolution"></div>
+      </div>
+
+      <div class="modal-section" id="schemaSection" style="display: none;">
+        <div class="modal-section-title">
+          📋 Code Schema
+          <button class="btn-copy" onclick="copyToClipboard('modalSchema')">📋 Copiar</button>
+        </div>
+        <div class="modal-section-content code" id="modalSchema"></div>
+      </div>
+
+      <div class="modal-section" id="tagsSection" style="display: none;">
+        <div class="modal-section-title">🏷️ Tags</div>
+        <div class="modal-section-content" id="modalTags"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Librería para exportar a PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <script>
+    const API_URL = 'http://localhost:3000/api/challenges';
+    let editMode = false;
+    let allChallenges = [];
+    let currentChallenge = null;
+
+    // Cargar challenges al iniciar
+    loadChallenges();
+
+    // Event listeners
+    document.getElementById('challengeForm').addEventListener('submit', handleSubmit);
+    document.getElementById('cancelBtn').addEventListener('click', resetForm);
+    document.getElementById('filterText').addEventListener('input', applyFilters);
+    document.getElementById('filterLanguage').addEventListener('change', applyFilters);
+
+    async function loadChallenges() {
+      try {
+        const response = await fetch(API_URL);
+        allChallenges = await response.json();
+        applyFilters();
+      } catch (error) {
+        document.getElementById('challengesList').innerHTML = 
+          '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Error al cargar challenges</p></div>';
+      }
+    }
+
+    function applyFilters() {
+      const textFilter = document.getElementById('filterText').value.toLowerCase();
+      const languageFilter = document.getElementById('filterLanguage').value;
+
+      const filtered = allChallenges.filter(challenge => {
+        const matchesText = 
+          challenge.nombre_challenge.toLowerCase().includes(textFilter) ||
+          (challenge.descripcion_challenge && challenge.descripcion_challenge.toLowerCase().includes(textFilter));
+        
+        const matchesLanguage = !languageFilter || challenge.lenguaje === languageFilter;
+
+        return matchesText && matchesLanguage;
+      });
+
+      renderChallenges(filtered);
+    }
+
+    function clearFilters() {
+      document.getElementById('filterText').value = '';
+      document.getElementById('filterLanguage').value = '';
+      applyFilters();
+    }
+
+    function renderChallenges(challenges) {
+      const container = document.getElementById('challengesList');
+      
+      if (challenges.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <p>No hay challenges todavía. ¡Crea el primero!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = challenges.map(challenge => `
+        <div class="challenge-card">
+          <div class="challenge-header">
+            <div class="challenge-title">${challenge.nombre_challenge}</div>
+          </div>
+          
+          <div class="challenge-meta">
+            <span class="badge badge-language">${challenge.lenguaje}</span>
+            <span class="badge badge-complexity">${challenge.complejidad}</span>
+            ${challenge.nivel ? `<span class="badge">${challenge.nivel}</span>` : ''}
+          </div>
+
+          <div class="challenge-description">${challenge.descripcion_challenge || 'Sin descripción'}</div>
+
+          ${challenge.tags ? `
+            <div class="challenge-tags">
+              ${challenge.tags.split(',').map(tag => `<span class="tag">${tag.trim()}</span>`).join('')}
+            </div>
+          ` : ''}
+
+          <div class="challenge-actions">
+            <button class="btn btn-secondary btn-small" onclick="viewChallengeFull(${challenge.id})">👁️ Ver Completo</button>
+            <button class="btn btn-secondary btn-small" onclick="editChallenge(${challenge.id})">✏️ Editar</button>
+            <button class="btn btn-danger btn-small" onclick="deleteChallenge(${challenge.id})">🗑️ Eliminar</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      
+      const data = {
+        nombre_challenge: document.getElementById('nombre_challenge').value,
+        descripcion_challenge: document.getElementById('descripcion_challenge').value,
+        lenguaje: document.getElementById('lenguaje').value,
+        complejidad: document.getElementById('complejidad').value,
+        nivel: document.getElementById('nivel').value,
+        solucion_challenge: document.getElementById('solucion_challenge').value,
+        code_schema: document.getElementById('code_schema').value,
+        tags: document.getElementById('tags').value
+      };
+
+      try {
+        const id = document.getElementById('challengeId').value;
+        const url = editMode ? `${API_URL}/${id}` : API_URL;
+        const method = editMode ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          resetForm();
+          clearFilters();
+          loadChallenges();
+        }
+      } catch (error) {
+        alert('Error al guardar el challenge');
+      }
+    }
+
+    async function editChallenge(id) {
+      try {
+        const response = await fetch(`${API_URL}/${id}`);
+        const challenge = await response.json();
+
+        document.getElementById('challengeId').value = challenge.id;
+        document.getElementById('nombre_challenge').value = challenge.nombre_challenge;
+        document.getElementById('descripcion_challenge').value = challenge.descripcion_challenge || '';
+        document.getElementById('lenguaje').value = challenge.lenguaje;
+        document.getElementById('complejidad').value = challenge.complejidad;
+        document.getElementById('nivel').value = challenge.nivel || '';
+        document.getElementById('solucion_challenge').value = challenge.solucion_challenge || '';
+        document.getElementById('code_schema').value = challenge.code_schema || '';
+        document.getElementById('tags').value = challenge.tags || '';
+
+        document.getElementById('formTitle').textContent = '✏️ Editar Challenge';
+        document.getElementById('btnText').textContent = 'Actualizar Challenge';
+        document.getElementById('cancelBtn').style.display = 'block';
+        editMode = true;
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (error) {
+        alert('Error al cargar el challenge');
+      }
+    }
+
+    async function deleteChallenge(id) {
+      if (!confirm('¿Estás seguro de eliminar este challenge?')) return;
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+          loadChallenges();
+        }
+      } catch (error) {
+        alert('Error al eliminar el challenge');
+      }
+    }
+
+    function resetForm() {
+      document.getElementById('challengeForm').reset();
+      document.getElementById('challengeId').value = '';
+      document.getElementById('formTitle').textContent = '➕ Nuevo Challenge';
+      document.getElementById('btnText').textContent = 'Crear Challenge';
+      document.getElementById('cancelBtn').style.display = 'none';
+      editMode = false;
+    }
+
+    async function viewChallengeFull(id) {
+      try {
+        const response = await fetch(`${API_URL}/${id}`);
+        const challenge = await response.json();
+        currentChallenge = challenge;
+
+        // Llenar título
+        document.getElementById('modalTitle').textContent = challenge.nombre_challenge;
+
+        // Llenar badges
+        const badgesHTML = `
+          <span class="modal-badge language">${challenge.lenguaje}</span>
+          <span class="modal-badge complexity">${challenge.complejidad}</span>
+          ${challenge.nivel ? `<span class="modal-badge">${challenge.nivel}</span>` : ''}
+        `;
+        document.getElementById('modalBadges').innerHTML = badgesHTML;
+
+        // Llenar descripción
+        document.getElementById('modalDescription').textContent = challenge.descripcion_challenge || 'Sin descripción';
+
+        // Llenar solución con syntax highlighting
+        const solutionSection = document.getElementById('solutionSection');
+        if (challenge.solucion_challenge) {
+          document.getElementById('modalSolution').innerHTML = highlightCode(challenge.solucion_challenge);
+          solutionSection.style.display = 'block';
+        } else {
+          solutionSection.style.display = 'none';
+        }
+
+        // Llenar code schema con syntax highlighting
+        const schemaSection = document.getElementById('schemaSection');
+        if (challenge.code_schema) {
+          document.getElementById('modalSchema').innerHTML = highlightCode(challenge.code_schema);
+          schemaSection.style.display = 'block';
+        } else {
+          schemaSection.style.display = 'none';
+        }
+
+        // Llenar tags
+        const tagsSection = document.getElementById('tagsSection');
+        if (challenge.tags) {
+          const tagsHTML = challenge.tags
+            .split(',')
+            .map(tag => `<span class="tag">${tag.trim()}</span>`)
+            .join('');
+          document.getElementById('modalTags').innerHTML = tagsHTML;
+          tagsSection.style.display = 'block';
+        } else {
+          tagsSection.style.display = 'none';
+        }
+
+        // Abrir modal
+        document.getElementById('modalChallenge').classList.add('active');
+      } catch (error) {
+        alert('Error al cargar el challenge');
+      }
+    }
+
+    function highlightCode(code) {
+      let highlighted = code;
+      
+      // Escapar HTML
+      highlighted = highlighted
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      // Palabras clave
+      const keywords = /\b(function|const|let|var|return|if|else|for|while|do|switch|case|break|continue|try|catch|finally|throw|async|await|class|extends|static|import|export|default|from|as|new|this|super|typeof|instanceof|in|of|delete|void)\b/g;
+      highlighted = highlighted.replace(keywords, '<span class="code-keyword">$1</span>');
+
+      // Strings
+      highlighted = highlighted.replace(/"([^"\\]|\\.)*"/g, match => `<span class="code-string">${match}</span>`);
+      highlighted = highlighted.replace(/'([^'\\]|\\.)*'/g, match => `<span class="code-string">${match}</span>`);
+      highlighted = highlighted.replace(/`([^`\\]|\\.)*`/g, match => `<span class="code-string">${match}</span>`);
+
+      // Números
+      highlighted = highlighted.replace(/\b(\d+\.?\d*)\b/g, '<span class="code-number">$1</span>');
+
+      // Comentarios
+      highlighted = highlighted.replace(/\/\/.*$/gm, match => `<span class="code-comment">${match}</span>`);
+      highlighted = highlighted.replace(/\/\*[\s\S]*?\*\//g, match => `<span class="code-comment">${match}</span>`);
+
+      // Funciones
+      highlighted = highlighted.replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*(?=\()/g, '<span class="code-function">$1</span>');
+
+      // Clases (PascalCase)
+      highlighted = highlighted.replace(/\b([A-Z][a-zA-Z0-9_$]*)\b/g, '<span class="code-class">$1</span>');
+
+      // Saltos de línea
+      highlighted = highlighted.replace(/\n/g, '<br>');
+
+      return highlighted;
+    }
+
+    function copyToClipboard(elementId) {
+      const element = document.getElementById(elementId);
+      const text = element.innerText;
+
+      navigator.clipboard.writeText(text).then(() => {
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = '✅ Copiado!';
+        button.classList.add('copied');
+
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.classList.remove('copied');
+        }, 2000);
+      }).catch(() => {
+        alert('Error al copiar el código');
+      });
+    }
+
+    function closeModal() {
+      document.getElementById('modalChallenge').classList.remove('active');
+    }
+
+    // Cerrar modal al clickear fuera
+    document.getElementById('modalChallenge').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+
+    // Cerrar modal con Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    function exportPDF() {
+      if (!currentChallenge) {
+        alert('No hay challenge cargado');
+        return;
+      }
+
+      // Llamar al endpoint del servidor para generar el PDF
+      const url = `${API_URL}/${currentChallenge.id}/pdf`;
+      window.open(url, '_blank');
+    }
+
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+  </script>
+</body>
+</html>

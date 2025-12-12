@@ -1,0 +1,292 @@
+const express = require('express');
+const sqlite3 = require('sqlite3').verbose();
+const cors = require('cors');
+const path = require('path');
+const PDFDocument = require('pdfkit');
+
+const app = express();
+const PORT = 3000;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static('public'));
+
+// Inicializar base de datos
+const db = new sqlite3.Database('./challenges.db', (err) => {
+  if (err) {
+    console.error('Error al conectar a la base de datos:', err);
+  } else {
+    console.log('Conectado a SQLite');
+    initDatabase();
+  }
+});
+
+// Crear tabla si no existe
+function initDatabase() {
+  const createTableSQL = `
+    CREATE TABLE IF NOT EXISTS challenges (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nombre_challenge TEXT NOT NULL,
+      descripcion_challenge TEXT,
+      lenguaje TEXT,
+      complejidad TEXT,
+      nivel TEXT,
+      solucion_challenge TEXT,
+      code_schema TEXT,
+      tags TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  
+  db.run(createTableSQL, (err) => {
+    if (err) {
+      console.error('Error al crear tabla:', err);
+    } else {
+      console.log('Tabla challenges lista');
+    }
+  });
+}
+
+// ===== RUTAS CRUD =====
+
+// CREATE - Crear un nuevo challenge
+app.post('/api/challenges', (req, res) => {
+  const {
+    nombre_challenge,
+    descripcion_challenge,
+    lenguaje,
+    complejidad,
+    nivel,
+    solucion_challenge,
+    code_schema,
+    tags
+  } = req.body;
+
+  const sql = `
+    INSERT INTO challenges (
+      nombre_challenge, descripcion_challenge, lenguaje, complejidad,
+      nivel, solucion_challenge, code_schema, tags
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.run(sql, [
+    nombre_challenge,
+    descripcion_challenge,
+    lenguaje,
+    complejidad,
+    nivel,
+    solucion_challenge,
+    code_schema,
+    tags
+  ], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({
+      id: this.lastID,
+      message: 'Challenge creado exitosamente'
+    });
+  });
+});
+
+// READ - Obtener todos los challenges
+app.get('/api/challenges', (req, res) => {
+  const sql = 'SELECT * FROM challenges ORDER BY created_at DESC';
+  
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(rows);
+  });
+});
+
+// READ - Obtener un challenge por ID
+app.get('/api/challenges/:id', (req, res) => {
+  const sql = 'SELECT * FROM challenges WHERE id = ?';
+  
+  db.get(sql, [req.params.id], (err, row) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (!row) {
+      return res.status(404).json({ error: 'Challenge no encontrado' });
+    }
+    res.json(row);
+  });
+});
+
+// UPDATE - Actualizar un challenge
+app.put('/api/challenges/:id', (req, res) => {
+  const {
+    nombre_challenge,
+    descripcion_challenge,
+    lenguaje,
+    complejidad,
+    nivel,
+    solucion_challenge,
+    code_schema,
+    tags
+  } = req.body;
+
+  const sql = `
+    UPDATE challenges 
+    SET nombre_challenge = ?, descripcion_challenge = ?, lenguaje = ?,
+        complejidad = ?, nivel = ?, solucion_challenge = ?,
+        code_schema = ?, tags = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `;
+
+  db.run(sql, [
+    nombre_challenge,
+    descripcion_challenge,
+    lenguaje,
+    complejidad,
+    nivel,
+    solucion_challenge,
+    code_schema,
+    tags,
+    req.params.id
+  ], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ error: 'Challenge no encontrado' });
+    }
+    res.json({ message: 'Challenge actualizado exitosamente' });
+  });
+});
+
+// DELETE - Eliminar un challenge
+app.delete('/api/challenges/:id', (req, res) => {
+  const sql = 'DELETE FROM challenges WHERE id = ?';
+  
+  db.run(sql, [req.params.id], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ error: 'Challenge no encontrado' });
+    }
+    res.json({ message: 'Challenge eliminado exitosamente' });
+  });
+});
+
+// EXPORT - Exportar un challenge a PDF
+app.get('/api/challenges/:id/pdf', (req, res) => {
+  const sql = 'SELECT * FROM challenges WHERE id = ?';
+  
+  db.get(sql, [req.params.id], (err, challenge) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (!challenge) {
+      return res.status(404).json({ error: 'Challenge no encontrado' });
+    }
+
+    // Crear documento PDF
+    const doc = new PDFDocument({
+      margins: {
+        top: 40,
+        bottom: 40,
+        left: 40,
+        right: 40
+      }
+    });
+
+    // Configurar respuesta
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${challenge.nombre_challenge.replace(/[^a-z0-9]/gi, '_')}.pdf"`);
+
+    doc.pipe(res);
+
+    // Título
+    doc.fontSize(24).font('Helvetica-Bold').fillColor('#667eea');
+    doc.text(challenge.nombre_challenge, { align: 'center' });
+    doc.moveDown(0.5);
+
+    // Línea divisoria
+    doc.moveTo(40, doc.y).lineTo(555, doc.y).stroke('#667eea');
+    doc.moveDown(1);
+
+    // Metadata
+    doc.fontSize(11).font('Helvetica').fillColor('#333');
+    doc.text(`Lenguaje: ${challenge.lenguaje}`, { continued: true });
+    doc.text(`  |  Complejidad: ${challenge.complejidad}`, { continued: true });
+    if (challenge.nivel) {
+      doc.text(`  |  Nivel: ${challenge.nivel}`);
+    } else {
+      doc.text('');
+    }
+    doc.moveDown(1);
+
+    // Descripción
+    doc.fontSize(14).font('Helvetica-Bold').fillColor('#667eea');
+    doc.text('Descripción');
+    doc.fontSize(11).font('Helvetica').fillColor('#333');
+    doc.text(challenge.descripcion_challenge || 'Sin descripción', {
+      align: 'left',
+      width: 475
+    });
+    doc.moveDown(1);
+
+    // Solución
+    if (challenge.solucion_challenge) {
+      doc.fontSize(14).font('Helvetica-Bold').fillColor('#667eea');
+      doc.text('Solución');
+      doc.fontSize(10).font('Courier').fillColor('#333');
+      doc.text(challenge.solucion_challenge, {
+        align: 'left',
+        width: 475
+      });
+      doc.moveDown(1);
+    }
+
+    // Code Schema
+    if (challenge.code_schema) {
+      doc.fontSize(14).font('Helvetica-Bold').fillColor('#667eea');
+      doc.text('Code Schema');
+      doc.fontSize(10).font('Courier').fillColor('#333');
+      doc.text(challenge.code_schema, {
+        align: 'left',
+        width: 475
+      });
+      doc.moveDown(1);
+    }
+
+    // Tags
+    if (challenge.tags) {
+      doc.fontSize(14).font('Helvetica-Bold').fillColor('#667eea');
+      doc.text('Tags');
+      doc.fontSize(11).font('Helvetica').fillColor('#333');
+      const tags = challenge.tags.split(',').map(tag => tag.trim());
+      doc.text(tags.join(', '));
+      doc.moveDown(1);
+    }
+
+    // Pie de página
+    doc.fontSize(9).fillColor('#999');
+    doc.text(`Generado el: ${new Date().toLocaleString('es-ES')}`, {
+      align: 'center',
+      y: doc.page.height - 30
+    });
+
+    doc.end();
+  });
+});
+
+// Iniciar servidor
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
+
+// Cerrar base de datos al terminar
+process.on('SIGINT', () => {
+  db.close(() => {
+    console.log('Base de datos cerrada');
+    process.exit(0);
+  });
+});
