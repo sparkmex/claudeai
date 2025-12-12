@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenges SQL - Consultas Básicas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        thead {
+            background: #667eea;
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #ddd;
+            font-size: 0.9rem;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+            font-size: 0.85rem;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tbody tr:hover {
+            background: #f0f0f0;
+            transition: background 0.3s;
+        }
+        
+        .nivel-basico {
+            background: #d4edda;
+            color: #155724;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .nivel-medio {
+            background: #fff3cd;
+            color: #856404;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .nivel-avanzado {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .complejidad-facil {
+            background: #e7f3ff;
+            color: #004085;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .complejidad-media {
+            background: #fff0e6;
+            color: #cc6600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .complejidad-alta {
+            background: #ffe6e6;
+            color: #cc0000;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        
+        .code-block {
+            background: #f4f4f4;
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .tag {
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        .logo {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🗄️</div>
+        <h1>Challenges SQL - Consultas Básicas</h1>
+        <p class="subtitle">Aprende SQL desde cero practicando con 100 desafíos progresivos</p>
+        
+        <!-- CONSULTAS SELECT BÁSICAS -->
+        <div class="section">
+            <h2>1️⃣ SELECT Básico - Seleccionar Columnas</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Nivel</th>
+                        <th>Complejidad</th>
+                        <th>Solución SQL</th>
+                        <th>Schema (PostgreSQL)</th>
+                        <th>Output Esperado</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Seleccionar Todas las Columnas</strong></td>
+                        <td>Obtén todos los datos de la tabla estudiantes</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT * FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT,
+  ciudad VARCHAR(100)
+);</div></td>
+                        <td>Todos los registros con todas las columnas</td>
+                        <td><div class="tags"><span class="tag">SELECT</span><span class="tag">básico</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Seleccionar Columna Específica</strong></td>
+                        <td>Obtén solo los nombres de todos los estudiantes</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT nombre FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Columna nombre de todos los registros</td>
+                        <td><div class="tags"><span class="tag">SELECT</span><span class="tag">columna</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Seleccionar Dos Columnas</strong></td>
+                        <td>Obtén nombre y edad de todos los estudiantes</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT nombre, edad FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT,
+  ciudad VARCHAR(100)
+);</div></td>
+                        <td>Dos columnas (nombre, edad)</td>
+                        <td><div class="tags"><span class="tag">SELECT</span><span class="tag">múltiples</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Alias de Columna</strong></td>
+                        <td>Obtén edad renombrada como "años"</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT nombre, edad AS años FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Columna edad con alias "años"</td>
+                        <td><div class="tags"><span class="tag">alias</span><span class="tag">AS</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Valores Únicos</strong></td>
+                        <td>Obtén todas las ciudades sin duplicados</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT DISTINCT ciudad FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  ciudad VARCHAR(100)
+);</div></td>
+                        <td>Lista de ciudades únicas</td>
+                        <td><div class="tags"><span class="tag">DISTINCT</span><span class="tag">únicos</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contar Registros</strong></td>
+                        <td>¿Cuántos estudiantes hay en total?</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT COUNT(*) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100)
+);</div></td>
+                        <td>Un número: cantidad total de estudiantes</td>
+                        <td><div class="tags"><span class="tag">COUNT</span><span class="tag">agregado</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contar Columna Específica</strong></td>
+                        <td>¿Cuántos estudiantes tienen edad registrada?</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT COUNT(edad) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Cantidad de registros con edad no nula</td>
+                        <td><div class="tags"><span class="tag">COUNT</span><span class="tag">nulo</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Promedio de Valores</strong></td>
+                        <td>¿Cuál es la edad promedio de los estudiantes?</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT AVG(edad) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Un número: promedio de edades</td>
+                        <td><div class="tags"><span class="tag">AVG</span><span class="tag">promedio</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Valor Máximo</strong></td>
+                        <td>¿Cuál es la edad máxima registrada?</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT MAX(edad) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Un número: edad máxima</td>
+                        <td><div class="tags"><span class="tag">MAX</span><span class="tag">máximo</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Valor Mínimo</strong></td>
+                        <td>¿Cuál es la edad mínima registrada?</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT MIN(edad) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Un número: edad mínima</td>
+                        <td><div class="tags"><span class="tag">MIN</span><span class="tag">mínimo</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- WHERE Y FILTROS -->
+        <div class="section">
+            <h2>2️⃣ WHERE - Filtrar Registros</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Nivel</th>
+                        <th>Complejidad</th>
+                        <th>Solución SQL</th>
+                        <th>Schema (PostgreSQL)</th>
+                        <th>Output Esperado</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Filtrar por Igualdad</strong></td>
+                        <td>Obtén todos los estudiantes de Madrid</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT * FROM estudiantes WHERE ciudad = 'Madrid';</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  ciudad VARCHAR(100)
+);</div></td>
+                        <td>Registros donde ciudad es Madrid</td>
+                        <td><div class="tags"><span class="tag">WHERE</span><span class="tag">igualdad</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Filtrar Mayor que</strong></td>
+                        <td>Obtén estudiantes mayores de 18 años</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT * FROM estudiantes WHERE edad > 18;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Registros con edad > 18</td>
+                        <td><div class="tags"><span class="tag">WHERE</span><span class="tag">comparación</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Filtrar Menor que</strong></td>
+                        <td>Obtén estudiantes menores de 16 años</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT * FROM estudiantes WHERE edad < 16;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Registros con edad < 16</td>
+                        <td><div class="tags"><span class="tag">WHERE</span><span class="tag">comparación</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Filtrar Diferente</strong></td>
+                        <td>Obtén estudiantes que no sean de Barcelona</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT * FROM estudiantes WHERE ciudad != 'Barcelona';</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  ciudad VARCHAR(100)
+);</div></td>
+                        <td>Registros donde ciudad no es Barcelona</td>
+                        <td><div class="tags"><span class="tag">WHERE</span><span class="tag">!=</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>AND Lógico</strong></td>
+                        <td>Obtén estudiantes de Madrid mayores de 20 años</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT * FROM estudiantes WHERE ciudad = 'Madrid' AND edad > 20;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT,
+  ciudad VARCHAR(100)
+);</div></td>
+                        <td>Registros de Madrid con edad > 20</td>
+                        <td><div class="tags"><span class="tag">AND</span><span class="tag">lógico</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>OR Lógico</strong></td>
+                        <td>Obtén estudiantes de Madrid o Barcelona</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT * FROM estudiantes WHERE ciudad = 'Madrid' OR ciudad = 'Barcelona';</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  ciudad VARCHAR(100)
+);</div></td>
+                        <td>Registros de Madrid o Barcelona</td>
+                        <td><div class="tags"><span class="tag">OR</span><span class="tag">lógico</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>IN (Múltiples Valores)</strong></td>
+                        <td>Obtén estudiantes de Madrid, Barcelona o Valencia</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT * FROM estudiantes WHERE ciudad IN ('Madrid', 'Barcelona', 'Valencia');</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  ciudad VARCHAR(100)
+);</div></td>
+                        <td>Registros de esas 3 ciudades</td>
+                        <td><div class="tags"><span class="tag">IN</span><span class="tag">múltiple</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>BETWEEN (Rango)</strong></td>
+                        <td>Obtén estudiantes entre 18 y 25 años</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT * FROM estudiantes WHERE edad BETWEEN 18 AND 25;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Registros con 18 ≤ edad ≤ 25</td>
+                        <td><div class="tags"><span class="tag">BETWEEN</span><span class="tag">rango</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>LIKE (Búsqueda de Texto)</strong></td>
+                        <td>Obtén estudiantes cuyo nombre empieza con "A"</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT * FROM estudiantes WHERE nombre LIKE 'A%';</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100)
+);</div></td>
+                        <td>Registros con nombre que inicia con A</td>
+                        <td><div class="tags"><span class="tag">LIKE</span><span class="tag">patrón</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>LIKE (Terminación)</strong></td>
+                        <td>Obtén estudiantes cuyo nombre termina con "o"</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT * FROM estudiantes WHERE nombre LIKE '%o';</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100)
+);</div></td>
+                        <td>Registros con nombre que termina con o</td>
+                        <td><div class="tags"><span class="tag">LIKE</span><span class="tag">patrón</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ORDER BY Y LIMIT -->
+        <div class="section">
+            <h2>3️⃣ ORDER BY y LIMIT - Ordenar y Limitar</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Nivel</th>
+                        <th>Complejidad</th>
+                        <th>Solución SQL</th>
+                        <th>Schema (PostgreSQL)</th>
+                        <th>Output Esperado</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Ordenar Ascendente</strong></td>
+                        <td>Obtén estudiantes ordenados por edad (menor a mayor)</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT * FROM estudiantes ORDER BY edad ASC;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Registros ordenados por edad ascendente</td>
+                        <td><div class="tags"><span class="tag">ORDER BY</span><span class="tag">ASC</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ordenar Descendente</strong></td>
+                        <td>Obtén estudiantes ordenados por edad (mayor a menor)</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT * FROM estudiantes ORDER BY edad DESC;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Registros ordenados por edad descendente</td>
+                        <td><div class="tags"><span class="tag">ORDER BY</span><span class="tag">DESC</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ordenar Alfabético</strong></td>
+                        <td>Obtén estudiantes ordenados por nombre alfabéticamente</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT * FROM estudiantes ORDER BY nombre ASC;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100)
+);</div></td>
+                        <td>Registros ordenados por nombre A-Z</td>
+                        <td><div class="tags"><span class="tag">ORDER BY</span><span class="tag">texto</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>LIMIT (Primeros N)</strong></td>
+                        <td>Obtén solo los 5 primeros estudiantes</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT * FROM estudiantes LIMIT 5;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100)
+);</div></td>
+                        <td>Solo 5 registros</td>
+                        <td><div class="tags"><span class="tag">LIMIT</span><span class="tag">restricción</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>TOP N Estudiantes por Edad</strong></td>
+                        <td>Obtén los 3 estudiantes más jóvenes</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT * FROM estudiantes ORDER BY edad ASC LIMIT 3;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>3 registros con menor edad</td>
+                        <td><div class="tags"><span class="tag">ORDER BY</span><span class="tag">LIMIT</span><span class="tag">TOP</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ordenar por Múltiples Columnas</strong></td>
+                        <td>Ordenar por ciudad y luego por nombre</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT * FROM estudiantes ORDER BY ciudad ASC, nombre ASC;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  ciudad VARCHAR(100)
+);</div></td>
+                        <td>Registros ordenados por ciudad y luego por nombre</td>
+                        <td><div class="tags"><span class="tag">ORDER BY</span><span class="tag">múltiple</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>OFFSET y LIMIT (Paginación)</strong></td>
+                        <td>Obtén registros 6-10 (segunda página)</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT * FROM estudiantes LIMIT 5 OFFSET 5;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100)
+);</div></td>
+                        <td>5 registros saltando los 5 primeros</td>
+                        <td><div class="tags"><span class="tag">OFFSET</span><span class="tag">paginación</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- GROUP BY -->
+        <div class="section">
+            <h2>4️⃣ GROUP BY - Agrupar y Agregar</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Nivel</th>
+                        <th>Complejidad</th>
+                        <th>Solución SQL</th>
+                        <th>Schema (PostgreSQL)</th>
+                        <th>Output Esperado</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Contar por Grupo</strong></td>
+                        <td>¿Cuántos estudiantes hay en cada ciudad?</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT ciudad, COUNT(*) FROM estudiantes GROUP BY ciudad;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  ciudad VARCHAR(100)
+);</div></td>
+                        <td>Filas: ciudad | cantidad</td>
+                        <td><div class="tags"><span class="tag">GROUP BY</span><span class="tag">COUNT</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Promedio por Grupo</strong></td>
+                        <td>¿Cuál es la edad promedio en cada ciudad?</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT ciudad, AVG(edad) FROM estudiantes GROUP BY ciudad;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  ciudad VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Filas: ciudad | promedio_edad</td>
+                        <td><div class="tags"><span class="tag">GROUP BY</span><span class="tag">AVG</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Máximo por Grupo</strong></td>
+                        <td>¿Cuál es la edad máxima en cada ciudad?</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT ciudad, MAX(edad) FROM estudiantes GROUP BY ciudad;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  ciudad VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Filas: ciudad | edad_máxima</td>
+                        <td><div class="tags"><span class="tag">GROUP BY</span><span class="tag">MAX</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mínimo por Grupo</strong></td>
+                        <td>¿Cuál es la edad mínima en cada ciudad?</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT ciudad, MIN(edad) FROM estudiantes GROUP BY ciudad;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  ciudad VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Filas: ciudad | edad_mínima</td>
+                        <td><div class="tags"><span class="tag">GROUP BY</span><span class="tag">MIN</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Suma por Grupo</strong></td>
+                        <td>¿Cuál es el total de edad en cada ciudad?</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT ciudad, SUM(edad) FROM estudiantes GROUP BY ciudad;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  ciudad VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Filas: ciudad | suma_edad</td>
+                        <td><div class="tags"><span class="tag">GROUP BY</span><span class="tag">SUM</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>GROUP BY Múltiples Columnas</strong></td>
+                        <td>Contar estudiantes por ciudad y edad</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT ciudad, edad, COUNT(*) FROM estudiantes GROUP BY ciudad, edad;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  ciudad VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Filas: ciudad | edad | cantidad</td>
+                        <td><div class="tags"><span class="tag">GROUP BY</span><span class="tag">múltiple</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>HAVING (Filtrar Grupos)</strong></td>
+                        <td>Ciudades con más de 5 estudiantes</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>SELECT ciudad, COUNT(*) FROM estudiantes GROUP BY ciudad HAVING COUNT(*) > 5;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  ciudad VARCHAR(100)
+);</div></td>
+                        <td>Solo ciudades con más de 5 estudiantes</td>
+                        <td><div class="tags"><span class="tag">HAVING</span><span class="tag">filtro</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>HAVING con AVG</strong></td>
+                        <td>Ciudades con edad promedio mayor a 25</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>SELECT ciudad, AVG(edad) FROM estudiantes GROUP BY ciudad HAVING AVG(edad) > 25;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  ciudad VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Ciudades con promedio > 25</td>
+                        <td><div class="tags"><span class="tag">HAVING</span><span class="tag">AVG</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- FECHAS -->
+        <div class="section">
+            <h2>5️⃣ Operaciones con Fechas</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Nivel</th>
+                        <th>Complejidad</th>
+                        <th>Solución SQL</th>
+                        <th>Schema (PostgreSQL)</th>
+                        <th>Output Esperado</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Fecha Actual</strong></td>
+                        <td>Obtén la fecha de hoy</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>SELECT CURRENT_DATE;</code></td>
+                        <td><div class="code-block">-- No requiere tabla</div></td>
+                        <td>La fecha de hoy en formato YYYY-MM-DD</td>
+                        <td><div class="tags"><span class="tag">FECHA</span><span class="tag">CURRENT_DATE</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Extrae Año</strong></td>
+                        <td>¿En qué año nació cada estudiante?</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT nombre, EXTRACT(YEAR FROM fecha_nacimiento) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  fecha_nacimiento DATE
+);</div></td>
+                        <td>Filas: nombre | año</td>
+                        <td><div class="tags"><span class="tag">EXTRACT</span><span class="tag">YEAR</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Extrae Mes</strong></td>
+                        <td>¿En qué mes nació cada estudiante?</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT nombre, EXTRACT(MONTH FROM fecha_nacimiento) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  fecha_nacimiento DATE
+);</div></td>
+                        <td>Filas: nombre | mes</td>
+                        <td><div class="tags"><span class="tag">EXTRACT</span><span class="tag">MONTH</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Diferencia de Años</strong></td>
+                        <td>¿Cuántos años tiene cada estudiante hoy?</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT nombre, EXTRACT(YEAR FROM age(fecha_nacimiento)) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  fecha_nacimiento DATE
+);</div></td>
+                        <td>Filas: nombre | edad</td>
+                        <td><div class="tags"><span class="tag">AGE</span><span class="tag">diferencia</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Filtrar por Rango de Fechas</strong></td>
+                        <td>Estudiantes nacidos entre 2000 y 2010</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT * FROM estudiantes WHERE fecha_nacimiento BETWEEN '2000-01-01' AND '2010-12-31';</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  fecha_nacimiento DATE
+);</div></td>
+                        <td>Registros nacidos entre 2000-2010</td>
+                        <td><div class="tags"><span class="tag">BETWEEN</span><span class="tag">DATE</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Estudiantes Mayores de Edad</strong></td>
+                        <td>Estudiantes con 18 años o más (nacidos antes de 2006)</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>SELECT * FROM estudiantes WHERE EXTRACT(YEAR FROM age(fecha_nacimiento)) >= 18;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  fecha_nacimiento DATE
+);</div></td>
+                        <td>Estudiantes con 18+ años</td>
+                        <td><div class="tags"><span class="tag">AGE</span><span class="tag">comparación</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- JOINS BÁSICOS -->
+        <div class="section">
+            <h2>6️⃣ JOINS - Combinar Tablas</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Nivel</th>
+                        <th>Complejidad</th>
+                        <th>Solución SQL</th>
+                        <th>Schema (PostgreSQL)</th>
+                        <th>Output Esperado</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>INNER JOIN Básico</strong></td>
+                        <td>Estudiantes con sus ciudades (solo los que existen en ambas tablas)</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>SELECT e.nombre, c.nombre FROM estudiantes e INNER JOIN ciudades c ON e.ciudad_id = c.id;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (id INT PRIMARY KEY, nombre VARCHAR(100), ciudad_id INT);
+CREATE TABLE ciudades (id INT PRIMARY KEY, nombre VARCHAR(100));</div></td>
+                        <td>Filas: nombre_estudiante | nombre_ciudad</td>
+                        <td><div class="tags"><span class="tag">INNER JOIN</span><span class="tag">combinación</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>LEFT JOIN</strong></td>
+                        <td>Todos los estudiantes y sus ciudades si existen</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>SELECT e.nombre, c.nombre FROM estudiantes e LEFT JOIN ciudades c ON e.ciudad_id = c.id;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (id INT PRIMARY KEY, nombre VARCHAR(100), ciudad_id INT);
+CREATE TABLE ciudades (id INT PRIMARY KEY, nombre VARCHAR(100));</div></td>
+                        <td>Todos los estudiantes (ciudad NULL si no existe)</td>
+                        <td><div class="tags"><span class="tag">LEFT JOIN</span><span class="tag">externa</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- CASOS AVANZADOS -->
+        <div class="section">
+            <h2>7️⃣ Casos Avanzados</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Nivel</th>
+                        <th>Complejidad</th>
+                        <th>Solución SQL</th>
+                        <th>Schema (PostgreSQL)</th>
+                        <th>Output Esperado</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>CASE WHEN</strong></td>
+                        <td>Clasificar estudiantes por rango de edad</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>SELECT nombre, CASE WHEN edad < 18 THEN 'Menor' WHEN edad >= 18 THEN 'Mayor' END FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Filas: nombre | clasificación</td>
+                        <td><div class="tags"><span class="tag">CASE</span><span class="tag">condicional</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>CAST (Conversión de Tipo)</strong></td>
+                        <td>Convertir edad a texto</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>SELECT nombre, CAST(edad AS VARCHAR) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  edad INT
+);</div></td>
+                        <td>Edad como texto</td>
+                        <td><div class="tags"><span class="tag">CAST</span><span class="tag">conversión</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>CONCAT (Concatenar Strings)</strong></td>
+                        <td>Combinar nombre y ciudad en una columna</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>SELECT CONCAT(nombre, ' - ', ciudad) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100),
+  ciudad VARCHAR(100)
+);</div></td>
+                        <td>Filas combinadas: "nombre - ciudad"</td>
+                        <td><div class="tags"><span class="tag">CONCAT</span><span class="tag">string</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>UPPER (Mayúsculas)</strong></td>
+                        <td>Convertir todos los nombres a mayúsculas</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT UPPER(nombre) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100)
+);</div></td>
+                        <td>Nombres en mayúsculas</td>
+                        <td><div class="tags"><span class="tag">UPPER</span><span class="tag">string</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>LOWER (Minúsculas)</strong></td>
+                        <td>Convertir todos los nombres a minúsculas</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT LOWER(nombre) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100)
+);</div></td>
+                        <td>Nombres en minúsculas</td>
+                        <td><div class="tags"><span class="tag">LOWER</span><span class="tag">string</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>LENGTH (Longitud de String)</strong></td>
+                        <td>¿Cuántos caracteres tiene cada nombre?</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT nombre, LENGTH(nombre) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100)
+);</div></td>
+                        <td>Filas: nombre | longitud</td>
+                        <td><div class="tags"><span class="tag">LENGTH</span><span class="tag">string</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>ROUND (Redondear)</strong></td>
+                        <td>Redondear promedio de edad a 2 decimales</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>SELECT ROUND(AVG(edad), 2) FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  edad INT
+);</div></td>
+                        <td>Un número redondeado a 2 decimales</td>
+                        <td><div class="tags"><span class="tag">ROUND</span><span class="tag">matemática</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>NULL Handling (COALESCE)</strong></td>
+                        <td>Mostrar nombre o "Sin asignar" si es NULL</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>SELECT COALESCE(nombre, 'Sin asignar') FROM estudiantes;</code></td>
+                        <td><div class="code-block">CREATE TABLE estudiantes (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(100)
+);</div></td>
+                        <td>Nombres o "Sin asignar" si NULL</td>
+                        <td><div class="tags"><span class="tag">COALESCE</span><span class="tag">NULL</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>
