@@ -84,6 +84,44 @@
       margin-bottom: 20px;
     }
 
+    .image-preview {
+      margin-top: 10px;
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      border-radius: 8px;
+      display: none;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .image-input-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-label {
+      display: block;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px dashed rgba(102, 126, 234, 0.3);
+      border-radius: 8px;
+      color: #b0b0b0;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .file-input-label:hover {
+      border-color: rgba(102, 126, 234, 0.6);
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    #imagenInput {
+      display: none;
+    }
+
     label {
       display: block;
       margin-bottom: 8px;
@@ -417,6 +455,69 @@
       color: #fff;
     }
 
+    /* Lightbox para imágenes */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox-content {
+      position: relative;
+      max-width: 90vw;
+      max-height: 90vh;
+    }
+
+    .lightbox-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.3s;
+    }
+
+    .lightbox-close:hover {
+      color: #667eea;
+    }
+
+    .image-modal-thumbnail {
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .image-modal-thumbnail:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+    }
+
     .modal-section {
       margin-bottom: 30px;
     }
@@ -558,6 +659,18 @@
           </div>
 
           <div class="form-group">
+            <label>Imagen (Attachment)</label>
+            <div class="image-input-wrapper">
+              <label for="imagenInput" class="file-input-label">
+                📷 Seleccionar imagen (JPG, PNG, GIF, WebP)
+              </label>
+              <input type="file" id="imagenInput" accept="image/*">
+            </div>
+            <img id="imagenPreview" class="image-preview" alt="Preview">
+            <input type="hidden" id="imagenUrlOld">
+          </div>
+
+          <div class="form-group">
             <label>Lenguaje</label>
             <select id="lenguaje" required>
               <option value="">Seleccionar...</option>
@@ -656,6 +769,10 @@
         </button>
       </div>
 
+      <div id="modalImage" style="display: none; margin-bottom: 20px;">
+        <img id="modalImg" class="image-modal-thumbnail" style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);" onclick="openLightbox(this.src)" alt="Imagen del challenge">
+      </div>
+
       <div class="modal-badges" id="modalBadges"></div>
 
       <div class="modal-section">
@@ -686,6 +803,14 @@
     </div>
   </div>
 
+  <!-- Lightbox para imágenes -->
+  <div id="lightbox" class="lightbox">
+    <div class="lightbox-content">
+      <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+      <img id="lightboxImage" class="lightbox-image" alt="Imagen a tamaño completo">
+    </div>
+  </div>
+
   <!-- Librería para exportar a PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -703,6 +828,7 @@
     document.getElementById('cancelBtn').addEventListener('click', resetForm);
     document.getElementById('filterText').addEventListener('input', applyFilters);
     document.getElementById('filterLanguage').addEventListener('change', applyFilters);
+    document.getElementById('imagenInput').addEventListener('change', handleImageSelect);
 
     async function loadChallenges() {
       try {
@@ -783,16 +909,23 @@
     async function handleSubmit(e) {
       e.preventDefault();
       
-      const data = {
-        nombre_challenge: document.getElementById('nombre_challenge').value,
-        descripcion_challenge: document.getElementById('descripcion_challenge').value,
-        lenguaje: document.getElementById('lenguaje').value,
-        complejidad: document.getElementById('complejidad').value,
-        nivel: document.getElementById('nivel').value,
-        solucion_challenge: document.getElementById('solucion_challenge').value,
-        code_schema: document.getElementById('code_schema').value,
-        tags: document.getElementById('tags').value
-      };
+      const formData = new FormData();
+      formData.append('nombre_challenge', document.getElementById('nombre_challenge').value);
+      formData.append('descripcion_challenge', document.getElementById('descripcion_challenge').value);
+      formData.append('lenguaje', document.getElementById('lenguaje').value);
+      formData.append('complejidad', document.getElementById('complejidad').value);
+      formData.append('nivel', document.getElementById('nivel').value);
+      formData.append('solucion_challenge', document.getElementById('solucion_challenge').value);
+      formData.append('code_schema', document.getElementById('code_schema').value);
+      formData.append('tags', document.getElementById('tags').value);
+
+      const imagenInput = document.getElementById('imagenInput');
+      if (imagenInput.files.length > 0) {
+        formData.append('imagen', imagenInput.files[0]);
+      } else if (!editMode) {
+        // Solo requerido para nuevos challenges
+        formData.append('imagen', null);
+      }
 
       try {
         const id = document.getElementById('challengeId').value;
@@ -801,17 +934,19 @@
 
         const response = await fetch(url, {
           method,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+          body: formData
         });
 
         if (response.ok) {
           resetForm();
           clearFilters();
           loadChallenges();
+        } else {
+          const error = await response.json();
+          alert('Error: ' + error.error);
         }
       } catch (error) {
-        alert('Error al guardar el challenge');
+        alert('Error al guardar el challenge: ' + error.message);
       }
     }
 
@@ -829,6 +964,13 @@
         document.getElementById('solucion_challenge').value = challenge.solucion_challenge || '';
         document.getElementById('code_schema').value = challenge.code_schema || '';
         document.getElementById('tags').value = challenge.tags || '';
+
+        // Mostrar imagen si existe
+        if (challenge.imagen_url) {
+          document.getElementById('imagenPreview').src = challenge.imagen_url;
+          document.getElementById('imagenPreview').style.display = 'block';
+          document.getElementById('imagenUrlOld').value = challenge.imagen_url;
+        }
 
         document.getElementById('formTitle').textContent = '✏️ Editar Challenge';
         document.getElementById('btnText').textContent = 'Actualizar Challenge';
@@ -860,7 +1002,22 @@
       document.getElementById('formTitle').textContent = '➕ Nuevo Challenge';
       document.getElementById('btnText').textContent = 'Crear Challenge';
       document.getElementById('cancelBtn').style.display = 'none';
+      document.getElementById('imagenPreview').style.display = 'none';
+      document.getElementById('imagenUrlOld').value = '';
       editMode = false;
+    }
+
+    function handleImageSelect(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const preview = document.getElementById('imagenPreview');
+          preview.src = event.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
     }
 
     async function viewChallengeFull(id) {
@@ -871,6 +1028,15 @@
 
         // Llenar título
         document.getElementById('modalTitle').textContent = challenge.nombre_challenge;
+
+        // Mostrar imagen si existe
+        const modalImage = document.getElementById('modalImage');
+        if (challenge.imagen_url) {
+          document.getElementById('modalImg').src = challenge.imagen_url;
+          modalImage.style.display = 'block';
+        } else {
+          modalImage.style.display = 'none';
+        }
 
         // Llenar badges
         const badgesHTML = `
@@ -1016,6 +1182,29 @@
       };
       return text.replace(/[&<>"']/g, m => map[m]);
     }
+
+    function openLightbox(imageSrc) {
+      document.getElementById('lightboxImage').src = imageSrc;
+      document.getElementById('lightbox').classList.add('active');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+    }
+
+    // Cerrar lightbox al clickear fuera
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeLightbox();
+      }
+    });
+
+    // Cerrar lightbox con Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      }
+    });
   </script>
 </body>
 </html>

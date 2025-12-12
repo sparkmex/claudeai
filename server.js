@@ -3,9 +3,44 @@ const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const path = require('path');
 const PDFDocument = require('pdfkit');
+const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
+
+// Crear carpeta de uploads si no existe
+const uploadDir = path.join(__dirname, 'public', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configurar multer para guardar archivos
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB máximo
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten imágenes (jpeg, jpg, png, gif, webp)'));
+    }
+  }
+});
 
 // Middleware
 app.use(cors());
@@ -35,6 +70,7 @@ function initDatabase() {
       solucion_challenge TEXT,
       code_schema TEXT,
       tags TEXT,
+      imagen_url TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
@@ -45,6 +81,17 @@ function initDatabase() {
       console.error('Error al crear tabla:', err);
     } else {
       console.log('Tabla challenges lista');
+      // Agregar columna imagen_url si no existe
+      db.run(`ALTER TABLE challenges ADD COLUMN imagen_url TEXT`, (err) => {
+        if (err) {
+          // Columna ya existe, ignorar error
+          if (!err.message.includes('duplicate column')) {
+            console.log('Columna imagen_url ya existe');
+          }
+        } else {
+          console.log('Columna imagen_url agregada exitosamente');
+        }
+      });
     }
   });
 }
@@ -52,7 +99,7 @@ function initDatabase() {
 // ===== RUTAS CRUD =====
 
 // CREATE - Crear un nuevo challenge
-app.post('/api/challenges', (req, res) => {
+app.post('/api/challenges', upload.single('imagen'), (req, res) => {
   const {
     nombre_challenge,
     descripcion_challenge,
@@ -64,11 +111,13 @@ app.post('/api/challenges', (req, res) => {
     tags
   } = req.body;
 
+  const imagenUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
   const sql = `
     INSERT INTO challenges (
       nombre_challenge, descripcion_challenge, lenguaje, complejidad,
-      nivel, solucion_challenge, code_schema, tags
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      nivel, solucion_challenge, code_schema, tags, imagen_url
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   db.run(sql, [
@@ -79,7 +128,8 @@ app.post('/api/challenges', (req, res) => {
     nivel,
     solucion_challenge,
     code_schema,
-    tags
+    tags,
+    imagenUrl
   ], function(err) {
     if (err) {
       return res.status(500).json({ error: err.message });
@@ -119,7 +169,7 @@ app.get('/api/challenges/:id', (req, res) => {
 });
 
 // UPDATE - Actualizar un challenge
-app.put('/api/challenges/:id', (req, res) => {
+app.put('/api/challenges/:id', upload.single('imagen'), (req, res) => {
   const {
     nombre_challenge,
     descripcion_challenge,
@@ -131,11 +181,21 @@ app.put('/api/challenges/:id', (req, res) => {
     tags
   } = req.body;
 
+  let imagenUrl = null;
+
+  if (req.file) {
+    // Si se subió una nueva imagen, usar esa
+    imagenUrl = `/uploads/${req.file.filename}`;
+  } else if (req.body.imagen_url) {
+    // Si no se subió imagen pero viene en el body, mantener la anterior
+    imagenUrl = req.body.imagen_url;
+  }
+
   const sql = `
     UPDATE challenges 
     SET nombre_challenge = ?, descripcion_challenge = ?, lenguaje = ?,
         complejidad = ?, nivel = ?, solucion_challenge = ?,
-        code_schema = ?, tags = ?, updated_at = CURRENT_TIMESTAMP
+        code_schema = ?, tags = ?, imagen_url = ?, updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
   `;
 
@@ -148,6 +208,7 @@ app.put('/api/challenges/:id', (req, res) => {
     solucion_challenge,
     code_schema,
     tags,
+    imagenUrl,
     req.params.id
   ], function(err) {
     if (err) {
