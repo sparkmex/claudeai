@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenges Python - Estructuras de Datos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        thead {
+            background: #667eea;
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #ddd;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tbody tr:hover {
+            background: #f0f0f0;
+            transition: background 0.3s;
+        }
+        
+        .nivel-basico {
+            background: #d4edda;
+            color: #155724;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .nivel-medio {
+            background: #fff3cd;
+            color: #856404;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .nivel-avanzado {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .complejidad-facil {
+            background: #e7f3ff;
+            color: #004085;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .complejidad-media {
+            background: #fff0e6;
+            color: #cc6600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .complejidad-alta {
+            background: #ffe6e6;
+            color: #cc0000;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .tag {
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .logo {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🐍</div>
+        <h1>Challenges Python - Estructuras de Datos</h1>
+        <p class="subtitle">Aprende Python practicando con desafíos de programación</p>
+        
+        <!-- LISTAS -->
+        <div class="section">
+            <h2>📋 Listas (List)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Nivel</th>
+                        <th>Complejidad</th>
+                        <th>Solución</th>
+                        <th>Code Schema</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Crear Tu Primera Lista</strong></td>
+                        <td>Crea una lista con 5 números y imprime cada elemento</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>numeros = [1, 2, 3, 4, 5]<br>for num in numeros:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(num)</code></td>
+                        <td><code>lista = [valores]<br>for item in lista:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(item)</code></td>
+                        <td><div class="tags"><span class="tag">lista</span><span class="tag">bucle</span><span class="tag">básico</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sumar Elementos</strong></td>
+                        <td>Suma todos los elementos de una lista de números</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>numeros = [10, 20, 30, 40]<br>suma = sum(numeros)<br>print(suma)</code></td>
+                        <td><code>lista = [números]<br>total = sum(lista)</code></td>
+                        <td><div class="tags"><span class="tag">suma</span><span class="tag">función</span><span class="tag">básico</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Encontrar el Mayor</strong></td>
+                        <td>Encuentra el número más grande en una lista</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>numeros = [15, 8, 42, 23, 5]<br>mayor = max(numeros)<br>print(mayor)</code></td>
+                        <td><code>lista = [números]<br>mayor = max(lista)</code></td>
+                        <td><div class="tags"><span class="tag">máximo</span><span class="tag">comparación</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contar Elementos</strong></td>
+                        <td>Cuenta cuántos elementos hay en una lista</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>frutas = ["manzana", "plátano", "naranja"]<br>cantidad = len(frutas)<br>print(cantidad)</code></td>
+                        <td><code>lista = [elementos]<br>cantidad = len(lista)</code></td>
+                        <td><div class="tags"><span class="tag">longitud</span><span class="tag">len</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Agregar Elementos</strong></td>
+                        <td>Agrega nuevos elementos a una lista existente</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>colores = ["rojo", "azul"]<br>colores.append("verde")<br>print(colores)</code></td>
+                        <td><code>lista = [elementos]<br>lista.append(elemento_nuevo)</code></td>
+                        <td><div class="tags"><span class="tag">append</span><span class="tag">mutabilidad</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Filtrar Pares</strong></td>
+                        <td>Crea una nueva lista solo con los números pares</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>numeros = [1, 2, 3, 4, 5, 6, 7, 8]<br>pares = [n for n in numeros if n % 2 == 0]<br>print(pares)</code></td>
+                        <td><code>lista = [números]<br>resultado = [x for x in lista if x % 2 == 0]</code></td>
+                        <td><div class="tags"><span class="tag">comprensión</span><span class="tag">filtrado</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Invertir Lista</strong></td>
+                        <td>Invierte el orden de los elementos de una lista</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>numeros = [1, 2, 3, 4, 5]<br>invertida = numeros[::-1]<br>print(invertida)</code></td>
+                        <td><code>lista = [elementos]<br>invertida = lista[::-1]</code></td>
+                        <td><div class="tags"><span class="tag">slicing</span><span class="tag">orden</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Duplicar Elementos</strong></td>
+                        <td>Crea una lista que contenga cada elemento duplicado</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>numeros = [1, 2, 3]<br>duplicados = [x * 2 for x in numeros]<br>print(duplicados)</code></td>
+                        <td><code>lista = [números]<br>resultado = [x * 2 for x in lista]</code></td>
+                        <td><div class="tags"><span class="tag">transformación</span><span class="tag">map</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Eliminar Duplicados</strong></td>
+                        <td>Elimina elementos duplicados de una lista manteniendo el orden</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>numeros = [1, 2, 2, 3, 3, 3, 4]<br>unicos = list(dict.fromkeys(numeros))<br>print(unicos)</code></td>
+                        <td><code>lista = [elementos_con_duplicados]<br>resultado = list(dict.fromkeys(lista))</code></td>
+                        <td><div class="tags"><span class="tag">deduplicación</span><span class="tag">diccionario</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ordenar y Agrupar</strong></td>
+                        <td>Ordena una lista de números y agrupa impares y pares</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>numeros = [5, 2, 8, 1, 9, 3]<br>impares = [x for x in numeros if x % 2 != 0]<br>pares = [x for x in numeros if x % 2 == 0]<br>print(sorted(pares), sorted(impares))</code></td>
+                        <td><code>lista = [números]<br>pares = [x for x in lista if x % 2 == 0]<br>impares = [x for x in lista if x % 2 != 0]</code></td>
+                        <td><div class="tags"><span class="tag">clasificación</span><span class="tag">ordenamiento</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- TUPLAS -->
+        <div class="section">
+            <h2>📦 Tuplas (Tuple)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Nivel</th>
+                        <th>Complejidad</th>
+                        <th>Solución</th>
+                        <th>Code Schema</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Crear Tu Primera Tupla</strong></td>
+                        <td>Crea una tupla con 3 elementos y accede al primero</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>mi_tupla = (10, 20, 30)<br>print(mi_tupla[0])</code></td>
+                        <td><code>tupla = (elemento1, elemento2, elemento3)<br>print(tupla[índice])</code></td>
+                        <td><div class="tags"><span class="tag">tupla</span><span class="tag">índice</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Desempaquetado de Tupla</strong></td>
+                        <td>Desempaqueta una tupla en variables individuales</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>datos = ("Juan", 15, "México")<br>nombre, edad, país = datos<br>print(nombre, edad)</code></td>
+                        <td><code>tupla = (valor1, valor2, valor3)<br>var1, var2, var3 = tupla</code></td>
+                        <td><div class="tags"><span class="tag">unpacking</span><span class="tag">variables</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contar en Tupla</strong></td>
+                        <td>Cuenta cuántos elementos hay en una tupla</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>tupla = (2, 4, 6, 8, 10)<br>cantidad = len(tupla)<br>print(cantidad)</code></td>
+                        <td><code>tupla = (elementos)<br>cantidad = len(tupla)</code></td>
+                        <td><div class="tags"><span class="tag">longitud</span><span class="tag">len</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Buscar en Tupla</strong></td>
+                        <td>Busca si un elemento existe en una tupla</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>frutas = ("manzana", "plátano", "naranja")<br>if "plátano" in frutas:<br>&nbsp;&nbsp;&nbsp;&nbsp;print("Encontrado")</code></td>
+                        <td><code>tupla = (elementos)<br>if elemento in tupla:</code></td>
+                        <td><div class="tags"><span class="tag">búsqueda</span><span class="tag">in</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tupla de Tuplas</strong></td>
+                        <td>Crea una tupla que contiene otras tuplas (matriz)</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>matriz = ((1, 2), (3, 4), (5, 6))<br>print(matriz[0][1])</code></td>
+                        <td><code>tupla = ((a, b), (c, d))<br>print(tupla[fila][columna])</code></td>
+                        <td><div class="tags"><span class="tag">anidada</span><span class="tag">matriz</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Convertir Lista a Tupla</strong></td>
+                        <td>Convierte una lista en tupla para hacerla inmutable</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>lista = [1, 2, 3, 4]<br>tupla = tuple(lista)<br>print(type(tupla))</code></td>
+                        <td><code>lista = [elementos]<br>tupla = tuple(lista)</code></td>
+                        <td><div class="tags"><span class="tag">conversión</span><span class="tag">tipo</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contar Ocurrencias</strong></td>
+                        <td>Cuenta cuántas veces aparece un elemento en una tupla</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>numeros = (1, 2, 2, 3, 2, 4, 2)<br>cantidad = numeros.count(2)<br>print(cantidad)</code></td>
+                        <td><code>tupla = (elementos)<br>cantidad = tupla.count(elemento)</code></td>
+                        <td><div class="tags"><span class="tag">count</span><span class="tag">frecuencia</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Encontrar Índice</strong></td>
+                        <td>Encuentra el índice de un elemento en una tupla</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>colores = ("rojo", "verde", "azul")<br>indice = colores.index("verde")<br>print(indice)</code></td>
+                        <td><code>tupla = (elementos)<br>indice = tupla.index(elemento)</code></td>
+                        <td><div class="tags"><span class="tag">index</span><span class="tag">búsqueda</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fusionar Tuplas</strong></td>
+                        <td>Combine dos tuplas en una sola</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>tupla1 = (1, 2, 3)<br>tupla2 = (4, 5, 6)<br>fusionada = tupla1 + tupla2<br>print(fusionada)</code></td>
+                        <td><code>tupla1 = (elementos1)<br>tupla2 = (elementos2)<br>resultado = tupla1 + tupla2</code></td>
+                        <td><div class="tags"><span class="tag">concatenación</span><span class="tag">operadores</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tupla como Clave</strong></td>
+                        <td>Usa una tupla como clave en un diccionario</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>coordenadas = {(0, 0): "origen", (1, 1): "diagonal"}<br>print(coordenadas[(0, 0)])</code></td>
+                        <td><code>diccionario = {(tupla_clave): valor}<br>print(diccionario[tupla_clave])</code></td>
+                        <td><div class="tags"><span class="tag">diccionario</span><span class="tag">clave</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- DICCIONARIOS -->
+        <div class="section">
+            <h2>🔑 Diccionarios (Dictionary)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Nivel</th>
+                        <th>Complejidad</th>
+                        <th>Solución</th>
+                        <th>Code Schema</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Crear Tu Primer Diccionario</strong></td>
+                        <td>Crea un diccionario con información de una persona</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>persona = {"nombre": "Ana", "edad": 16}<br>print(persona["nombre"])</code></td>
+                        <td><code>diccionario = {"clave": valor}<br>print(diccionario["clave"])</code></td>
+                        <td><div class="tags"><span class="tag">diccionario</span><span class="tag">acceso</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Agregar Elemento</strong></td>
+                        <td>Agrega un nuevo par clave-valor a un diccionario</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>estudiante = {"nombre": "Carlos"}<br>estudiante["edad"] = 17<br>print(estudiante)</code></td>
+                        <td><code>diccionario = {}<br>diccionario["clave"] = valor</code></td>
+                        <td><div class="tags"><span class="tag">mutabilidad</span><span class="tag">agregar</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Obtener Todas las Claves</strong></td>
+                        <td>Obtén todas las claves de un diccionario</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>libro = {"título": "Python", "autor": "Guido", "año": 1991}<br>print(libro.keys())</code></td>
+                        <td><code>diccionario = {...}<br>claves = diccionario.keys()</code></td>
+                        <td><div class="tags"><span class="tag">keys</span><span class="tag">iteración</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Obtener Todos los Valores</strong></td>
+                        <td>Obtén todos los valores de un diccionario</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>calificaciones = {"Matemáticas": 85, "Español": 90}<br>print(list(calificaciones.values()))</code></td>
+                        <td><code>diccionario = {...}<br>valores = diccionario.values()</code></td>
+                        <td><div class="tags"><span class="tag">values</span><span class="tag">extracción</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Verificar Clave</strong></td>
+                        <td>Verifica si una clave existe en un diccionario</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>producto = {"nombre": "Laptop", "precio": 500}<br>if "precio" in producto:<br>&nbsp;&nbsp;&nbsp;&nbsp;print("La clave existe")</code></td>
+                        <td><code>diccionario = {...}<br>if "clave" in diccionario:</code></td>
+                        <td><div class="tags"><span class="tag">in</span><span class="tag">búsqueda</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Eliminar Elemento</strong></td>
+                        <td>Elimina un par clave-valor de un diccionario</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>configuración = {"idioma": "es", "tema": "oscuro"}<br>del configuración["tema"]<br>print(configuración)</code></td>
+                        <td><code>diccionario = {...}<br>del diccionario["clave"]</code></td>
+                        <td><div class="tags"><span class="tag">del</span><span class="tag">eliminación</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Iterar Diccionario</strong></td>
+                        <td>Recorre todos los pares clave-valor de un diccionario</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>notas = {"Ana": 95, "Luis": 87, "María": 92}<br>for nombre, nota in notas.items():<br>&nbsp;&nbsp;&nbsp;&nbsp;print(f"{nombre}: {nota}")</code></td>
+                        <td><code>diccionario = {...}<br>for clave, valor in diccionario.items():</code></td>
+                        <td><div class="tags"><span class="tag">items</span><span class="tag">bucle</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Diccionario Anidado</strong></td>
+                        <td>Crea un diccionario que contiene otros diccionarios</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>escuela = {"clase1": {"profesor": "Juan", "alumnos": 30}}<br>print(escuela["clase1"]["profesor"])</code></td>
+                        <td><code>diccionario = {"clave": {"subclave": valor}}<br>print(diccionario["clave"]["subclave"])</code></td>
+                        <td><div class="tags"><span class="tag">anidado</span><span class="tag">estructura</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Actualizar Diccionario</strong></td>
+                        <td>Actualiza un diccionario con valores de otro diccionario</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>diccionario1 = {"a": 1, "b": 2}<br>diccionario2 = {"b": 20, "c": 30}<br>diccionario1.update(diccionario2)<br>print(diccionario1)</code></td>
+                        <td><code>diccionario1.update(diccionario2)</code></td>
+                        <td><div class="tags"><span class="tag">update</span><span class="tag">fusión</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contar Frecuencias</strong></td>
+                        <td>Cuenta la frecuencia de cada elemento en una lista usando diccionario</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>letras = "python"<br>frecuencia = {}<br>for letra in letras:<br>&nbsp;&nbsp;&nbsp;&nbsp;frecuencia[letra] = frecuencia.get(letra, 0) + 1<br>print(frecuencia)</code></td>
+                        <td><code>diccionario = {}<br>for item in lista:<br>&nbsp;&nbsp;&nbsp;&nbsp;diccionario[item] = diccionario.get(item, 0) + 1</code></td>
+                        <td><div class="tags"><span class="tag">get</span><span class="tag">conteo</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- CONJUNTOS -->
+        <div class="section">
+            <h2>🎯 Conjuntos (Set)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Nivel</th>
+                        <th>Complejidad</th>
+                        <th>Solución</th>
+                        <th>Code Schema</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Crear Tu Primer Conjunto</strong></td>
+                        <td>Crea un conjunto con 5 números únicos</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>numeros = {1, 2, 3, 4, 5}<br>print(numeros)</code></td>
+                        <td><code>conjunto = {elemento1, elemento2, elemento3}</code></td>
+                        <td><div class="tags"><span class="tag">conjunto</span><span class="tag">únicos</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Eliminar Duplicados</strong></td>
+                        <td>Convierte una lista con duplicados a un conjunto</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>lista = [1, 2, 2, 3, 3, 3, 4]<br>unicos = set(lista)<br>print(unicos)</code></td>
+                        <td><code>lista = [elementos_con_repetición]<br>conjunto = set(lista)</code></td>
+                        <td><div class="tags"><span class="tag">set</span><span class="tag">deduplicación</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Agregar Elemento</strong></td>
+                        <td>Agrega un nuevo elemento a un conjunto</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>frutas = {"manzana", "naranja"}<br>frutas.add("plátano")<br>print(frutas)</code></td>
+                        <td><code>conjunto = {elementos}<br>conjunto.add(elemento)</code></td>
+                        <td><div class="tags"><span class="tag">add</span><span class="tag">mutabilidad</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Verificar Pertenencia</strong></td>
+                        <td>Verifica si un elemento pertenece a un conjunto</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>numeros = {10, 20, 30, 40}<br>if 20 in numeros:<br>&nbsp;&nbsp;&nbsp;&nbsp;print("Está en el conjunto")</code></td>
+                        <td><code>conjunto = {elementos}<br>if elemento in conjunto:</code></td>
+                        <td><div class="tags"><span class="tag">in</span><span class="tag">búsqueda</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contar Elementos</strong></td>
+                        <td>Cuenta cuántos elementos hay en un conjunto</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>colores = {"rojo", "azul", "verde", "amarillo"}<br>cantidad = len(colores)<br>print(cantidad)</code></td>
+                        <td><code>conjunto = {elementos}<br>cantidad = len(conjunto)</code></td>
+                        <td><div class="tags"><span class="tag">len</span><span class="tag">tamaño</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Unión de Conjuntos</strong></td>
+                        <td>Combina dos conjuntos en uno (todos los elementos únicos)</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>set1 = {1, 2, 3}<br>set2 = {3, 4, 5}<br>union = set1 | set2<br>print(union)</code></td>
+                        <td><code>conjunto1 = {elementos}<br>conjunto2 = {elementos}<br>union = conjunto1 | conjunto2</code></td>
+                        <td><div class="tags"><span class="tag">unión</span><span class="tag">operador</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Intersección</strong></td>
+                        <td>Encuentra elementos comunes entre dos conjuntos</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>set1 = {1, 2, 3, 4}<br>set2 = {3, 4, 5, 6}<br>comun = set1 & set2<br>print(comun)</code></td>
+                        <td><code>conjunto1 = {elementos}<br>conjunto2 = {elementos}<br>intersección = conjunto1 & conjunto2</code></td>
+                        <td><div class="tags"><span class="tag">intersección</span><span class="tag">común</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Diferencia</strong></td>
+                        <td>Encuentra elementos que están en un conjunto pero no en otro</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>set1 = {1, 2, 3, 4}<br>set2 = {3, 4, 5, 6}<br>diferencia = set1 - set2<br>print(diferencia)</code></td>
+                        <td><code>conjunto1 = {elementos}<br>conjunto2 = {elementos}<br>diferencia = conjunto1 - conjunto2</code></td>
+                        <td><div class="tags"><span class="tag">diferencia</span><span class="tag">exclusión</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Subconjunto y Superconjunto</strong></td>
+                        <td>Verifica si un conjunto es subconjunto de otro</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>set1 = {1, 2}<br>set2 = {1, 2, 3, 4}<br>print(set1 &lt;= set2)<br>print(set2 &gt;= set1)</code></td>
+                        <td><code>conjunto1 &lt;= conjunto2  # subconjunto<br>conjunto1 &gt;= conjunto2  # superconjunto</code></td>
+                        <td><div class="tags"><span class="tag">subconjunto</span><span class="tag">relación</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Diferencia Simétrica</strong></td>
+                        <td>Elementos que están en un conjunto u otro pero no en ambos</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>set1 = {1, 2, 3, 4}<br>set2 = {3, 4, 5, 6}<br>diferencia_simetrica = set1 ^ set2<br>print(diferencia_simetrica)</code></td>
+                        <td><code>conjunto1 = {elementos}<br>conjunto2 = {elementos}<br>diferencia_simetrica = conjunto1 ^ conjunto2</code></td>
+                        <td><div class="tags"><span class="tag">simétrica</span><span class="tag">xor</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- STRINGS -->
+        <div class="section">
+            <h2>📝 Strings (str)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Nivel</th>
+                        <th>Complejidad</th>
+                        <th>Solución</th>
+                        <th>Code Schema</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Tu Primer String</strong></td>
+                        <td>Crea un string y accede a un carácter específico</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>mensaje = "Hola Mundo"<br>print(mensaje[0])</code></td>
+                        <td><code>string = "texto"<br>print(string[índice])</code></td>
+                        <td><div class="tags"><span class="tag">string</span><span class="tag">índice</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Longitud de String</strong></td>
+                        <td>Calcula la longitud de un string</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>palabra = "Python"<br>longitud = len(palabra)<br>print(longitud)</code></td>
+                        <td><code>string = "texto"<br>longitud = len(string)</code></td>
+                        <td><div class="tags"><span class="tag">len</span><span class="tag">longitud</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Convertir a Mayúsculas</strong></td>
+                        <td>Convierte un string a mayúsculas</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>texto = "python"<br>mayuscula = texto.upper()<br>print(mayuscula)</code></td>
+                        <td><code>string = "texto"<br>mayuscula = string.upper()</code></td>
+                        <td><div class="tags"><span class="tag">upper</span><span class="tag">mayúsculas</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Convertir a Minúsculas</strong></td>
+                        <td>Convierte un string a minúsculas</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>texto = "PYTHON"<br>minuscula = texto.lower()<br>print(minuscula)</code></td>
+                        <td><code>string = "TEXTO"<br>minuscula = string.lower()</code></td>
+                        <td><div class="tags"><span class="tag">lower</span><span class="tag">minúsculas</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Buscar Subcadena</strong></td>
+                        <td>Busca si una palabra existe dentro de un string</td>
+                        <td><span class="nivel-basico">Básico</span></td>
+                        <td><span class="complejidad-facil">Fácil</span></td>
+                        <td><code>frase = "Me encanta programar"<br>if "programar" in frase:<br>&nbsp;&nbsp;&nbsp;&nbsp;print("Encontrado")</code></td>
+                        <td><code>string = "texto"<br>if "búsqueda" in string:</code></td>
+                        <td><div class="tags"><span class="tag">in</span><span class="tag">búsqueda</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dividir String</strong></td>
+                        <td>Divide un string en partes usando un separador</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>texto = "rojo,verde,azul"<br>colores = texto.split(",")<br>print(colores)</code></td>
+                        <td><code>string = "texto"<br>partes = string.split(separador)</code></td>
+                        <td><div class="tags"><span class="tag">split</span><span class="tag">división</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reemplazar Texto</strong></td>
+                        <td>Reemplaza una palabra por otra en un string</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>frase = "Amo Java"<br>nueva = frase.replace("Java", "Python")<br>print(nueva)</code></td>
+                        <td><code>string = "texto"<br>nuevo = string.replace("viejo", "nuevo")</code></td>
+                        <td><div class="tags"><span class="tag">replace</span><span class="tag">sustitución</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Concatenar Strings</strong></td>
+                        <td>Une varios strings en uno solo</td>
+                        <td><span class="nivel-medio">Medio</span></td>
+                        <td><span class="complejidad-media">Media</span></td>
+                        <td><code>nombre = "Juan"<br>apellido = "Pérez"<br>completo = nombre + " " + apellido<br>print(completo)</code></td>
+                        <td><code>string1 = "texto1"<br>string2 = "texto2"<br>resultado = string1 + string2</code></td>
+                        <td><div class="tags"><span class="tag">concatenación</span><span class="tag">+</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slicing de String</strong></td>
+                        <td>Extrae una parte específica de un string</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>palabra = "Python"<br>inicio = palabra[0:3]<br>final = palabra[-3:]<br>invertida = palabra[::-1]<br>print(inicio, final, invertida)</code></td>
+                        <td><code>string = "texto"<br>parte = string[inicio:fin:paso]</code></td>
+                        <td><div class="tags"><span class="tag">slicing</span><span class="tag">índices</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>F-strings (Formateo)</strong></td>
+                        <td>Formatea strings con variables de manera legible</td>
+                        <td><span class="nivel-avanzado">Avanzado</span></td>
+                        <td><span class="complejidad-alta">Alta</span></td>
+                        <td><code>nombre = "Ana"<br>edad = 16<br>mensaje = f"Mi nombre es {nombre} y tengo {edad} años"<br>print(mensaje)</code></td>
+                        <td><code>variable = valor<br>f"texto {variable} más texto"</code></td>
+                        <td><div class="tags"><span class="tag">f-string</span><span class="tag">formateo</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+</body>
+</html>

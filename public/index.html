@@ -229,8 +229,9 @@
     .challenge-header {
       display: flex;
       justify-content: space-between;
-      align-items: start;
+      align-items: flex-start;
       margin-bottom: 12px;
+      gap: 12px;
     }
 
     .challenge-title {
@@ -238,6 +239,26 @@
       font-weight: 600;
       color: #fff;
       flex: 1;
+    }
+
+    .challenge-labels {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-end;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .challenge-label {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: rgba(168, 183, 255, 0.15);
+      color: #d0d0ff;
+      border: 1px solid rgba(168, 183, 255, 0.25);
     }
 
     .challenge-meta {
@@ -659,6 +680,19 @@
           </div>
 
           <div class="form-group">
+            <label>Lenguaje</label>
+            <select id="lenguaje" required>
+              <option value="Python" selected>Python</option>
+              <option value="JavaScript">JavaScript</option>
+              <option value="Java">Java</option>
+              <option value="C++">C++</option>
+              <option value="Go">Go</option>
+              <option value="Rust">Rust</option>
+              <option value="SQL">SQL</option>
+            </select>
+          </div>
+
+          <div class="form-group">
             <label>Imagen (Attachment)</label>
             <div class="image-input-wrapper">
               <label for="imagenInput" class="file-input-label">
@@ -668,20 +702,6 @@
             </div>
             <img id="imagenPreview" class="image-preview" alt="Preview">
             <input type="hidden" id="imagenUrlOld">
-          </div>
-
-          <div class="form-group">
-            <label>Lenguaje</label>
-            <select id="lenguaje" required>
-              <option value="">Seleccionar...</option>
-              <option value="JavaScript">JavaScript</option>
-              <option value="Python">Python</option>
-              <option value="Java">Java</option>
-              <option value="C++">C++</option>
-              <option value="Go">Go</option>
-              <option value="Rust">Rust</option>
-              <option value="SQL">SQL</option>
-            </select>
           </div>
 
           <div class="form-group">
@@ -725,7 +745,12 @@
       </div>
 
       <div class="challenges-section">
-        <h2 class="section-title">📚 Challenges</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2 class="section-title">📚 Challenges</h2>
+          <div id="resultCount" style="color: #d0d0d0; font-size: 0.95rem; font-weight: 500; background: rgba(102, 126, 234, 0.2); padding: 8px 16px; border-radius: 6px; border: 1px solid rgba(102, 126, 234, 0.4); box-shadow: 0 0 12px rgba(102, 126, 234, 0.1);">
+            Resultados: 0
+          </div>
+        </div>
         
         <div class="filters-section">
           <div class="filter-group">
@@ -855,6 +880,17 @@
         return matchesText && matchesLanguage;
       });
 
+      // Actualizar contador de resultados
+      const resultCount = document.getElementById('resultCount');
+      const totalCount = allChallenges.length;
+      const filteredCount = filtered.length;
+      
+      if (filteredCount === totalCount && !textFilter && !languageFilter) {
+        resultCount.textContent = `Resultados: ${totalCount}`;
+      } else {
+        resultCount.textContent = `Resultados: ${filteredCount} de ${totalCount}`;
+      }
+
       renderChallenges(filtered);
     }
 
@@ -881,6 +917,10 @@
         <div class="challenge-card">
           <div class="challenge-header">
             <div class="challenge-title">${challenge.nombre_challenge}</div>
+            <div class="challenge-labels">
+              <span class="challenge-label">🔤 ${challenge.lenguaje}</span>
+              ${challenge.tags ? `<span class="challenge-label">🏷️ ${challenge.tags.split(',').map(tag => tag.trim()).join(', ')}</span>` : ''}
+            </div>
           </div>
           
           <div class="challenge-meta">
