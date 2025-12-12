@@ -5,6 +5,7 @@ const path = require('path');
 const PDFDocument = require('pdfkit');
 const multer = require('multer');
 const fs = require('fs');
+const { spawn } = require('child_process');
 
 const app = express();
 const PORT = 3000;
@@ -71,6 +72,8 @@ function initDatabase() {
       code_schema TEXT,
       tags TEXT,
       imagen_url TEXT,
+      video_demostracion TEXT DEFAULT 'No disponible',
+      path TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
@@ -108,16 +111,19 @@ app.post('/api/challenges', upload.single('imagen'), (req, res) => {
     nivel,
     solucion_challenge,
     code_schema,
-    tags
+    tags,
+    video_demostracion,
+    path
   } = req.body;
 
   const imagenUrl = req.file ? `/uploads/${req.file.filename}` : null;
+  const video = video_demostracion || 'No disponible';
 
   const sql = `
     INSERT INTO challenges (
       nombre_challenge, descripcion_challenge, lenguaje, complejidad,
-      nivel, solucion_challenge, code_schema, tags, imagen_url
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      nivel, solucion_challenge, code_schema, tags, imagen_url, video_demostracion, path
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   db.run(sql, [
@@ -129,7 +135,9 @@ app.post('/api/challenges', upload.single('imagen'), (req, res) => {
     solucion_challenge,
     code_schema,
     tags,
-    imagenUrl
+    imagenUrl,
+    video,
+    path || null
   ], function(err) {
     if (err) {
       return res.status(500).json({ error: err.message });
@@ -178,7 +186,9 @@ app.put('/api/challenges/:id', upload.single('imagen'), (req, res) => {
     nivel,
     solucion_challenge,
     code_schema,
-    tags
+    tags,
+    video_demostracion,
+    path
   } = req.body;
 
   let imagenUrl = null;
@@ -191,11 +201,13 @@ app.put('/api/challenges/:id', upload.single('imagen'), (req, res) => {
     imagenUrl = req.body.imagen_url;
   }
 
+  const video = video_demostracion || 'No disponible';
+
   const sql = `
     UPDATE challenges 
     SET nombre_challenge = ?, descripcion_challenge = ?, lenguaje = ?,
         complejidad = ?, nivel = ?, solucion_challenge = ?,
-        code_schema = ?, tags = ?, imagen_url = ?, updated_at = CURRENT_TIMESTAMP
+        code_schema = ?, tags = ?, imagen_url = ?, video_demostracion = ?, path = ?, updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
   `;
 
@@ -209,6 +221,8 @@ app.put('/api/challenges/:id', upload.single('imagen'), (req, res) => {
     code_schema,
     tags,
     imagenUrl,
+    video,
+    path || null,
     req.params.id
   ], function(err) {
     if (err) {
@@ -350,6 +364,326 @@ app.get('/api/challenges/:id/pdf', (req, res) => {
 
     doc.end();
   });
+});
+
+// ===== RUTAS DE ADMINISTRACIÓN =====
+
+// GET - Listar archivos disponibles para cargar
+app.get('/api/admin/available-files', (req, res) => {
+  const files = [];
+  const dir = __dirname;
+  
+  try {
+    const fileList = fs.readdirSync(dir);
+    const insertFiles = fileList.filter(file => file.startsWith('insert_') && file.endsWith('.js'));
+    
+    insertFiles.forEach(file => {
+      files.push({
+        name: file,
+        path: path.join(dir, file),
+        type: file.includes('sql') ? 'SQL' : file.includes('python') ? 'Python' : 'Challenges'
+      });
+    });
+    
+    res.json(files);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET - Obtener estadísticas de la BD
+app.get('/api/admin/stats', (req, res) => {
+  const sql = `
+    SELECT 
+      COUNT(*) as total_challenges,
+      COUNT(DISTINCT lenguaje) as total_languages,
+      SUM(CASE WHEN complejidad = 'Fácil' THEN 1 ELSE 0 END) as easy_count,
+      SUM(CASE WHEN complejidad = 'Medio' THEN 1 ELSE 0 END) as medium_count,
+      SUM(CASE WHEN complejidad = 'Difícil' THEN 1 ELSE 0 END) as hard_count
+    FROM challenges
+  `;
+  
+  db.get(sql, [], (err, row) => {
+    if (err) {
+      console.error('Error en query:', err);
+      return res.status(500).json({ error: err.message });
+    }
+    
+    // Asegurar que los valores sean números y no null
+    const stats = {
+      total_challenges: row?.total_challenges || 0,
+      total_languages: row?.total_languages || 0,
+      easy_count: row?.easy_count || 0,
+      medium_count: row?.medium_count || 0,
+      hard_count: row?.hard_count || 0
+    };
+    
+    res.json(stats);
+  });
+});
+
+// POST - Cargar datos desde archivo
+app.post('/api/admin/load-data', (req, res) => {
+  const { filename } = req.body;
+  
+  if (!filename || !filename.startsWith('insert_') || !filename.endsWith('.js')) {
+    return res.status(400).json({ error: 'Nombre de archivo inválido' });
+  }
+  
+  const filepath = path.join(__dirname, filename);
+  
+  // Verificar que el archivo existe y está en el directorio correcto
+  if (!fs.existsSync(filepath) || !filepath.startsWith(__dirname)) {
+    return res.status(404).json({ error: 'Archivo no encontrado' });
+  }
+  
+  // Ejecutar el archivo como proceso hijo para evitar errores que maten el servidor
+  const child = spawn('node', [filepath], {
+    cwd: __dirname,
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
+
+  let stdout = '';
+  let stderr = '';
+
+  child.stdout.on('data', (data) => {
+    stdout += data.toString();
+  });
+
+  child.stderr.on('data', (data) => {
+    stderr += data.toString();
+  });
+
+  child.on('close', (code) => {
+    if (code === 0) {
+      res.json({ 
+        message: `Datos cargados desde ${filename} exitosamente`,
+        output: stdout
+      });
+    } else {
+      res.status(500).json({ 
+        error: `Error al cargar datos: ${stderr || 'Error desconocido'}`,
+        code: code
+      });
+    }
+  });
+
+  child.on('error', (error) => {
+    res.status(500).json({ error: `Error al ejecutar archivo: ${error.message}` });
+  });
+});
+
+// GET - Generar respaldo de la BD en formato DDL + INSERT
+app.get('/api/admin/backup', (req, res) => {
+  try {
+    let backup = '';
+    
+    // Encabezado
+    backup += `-- Respaldo de Challenge Manager Academy\n`;
+    backup += `-- Generado el: ${new Date().toLocaleString('es-ES')}\n`;
+    backup += `-- Total de challenges: `;
+    
+    // Obtener información de la tabla y los datos
+    db.serialize(() => {
+      // Obtener DDL de la tabla
+      db.get("SELECT sql FROM sqlite_master WHERE type='table' AND name='challenges'", [], (err, row) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        
+        let ddlSql = row.sql;
+        
+        // Obtener todos los datos
+        db.all('SELECT * FROM challenges ORDER BY id', [], (err, rows) => {
+          if (err) {
+            return res.status(500).json({ error: err.message });
+          }
+          
+          // Agregar DDL
+          backup += rows.length + '\n\n';
+          backup += '-- ===== DDL (Estructura) =====\n\n';
+          backup += `DROP TABLE IF EXISTS challenges;\n`;
+          backup += ddlSql + ';\n\n';
+          
+          // Agregar INSERTs
+          backup += '-- ===== INSERTS (Datos) =====\n\n';
+          
+          rows.forEach(row => {
+            const values = [
+              `'${row.nombre_challenge.replace(/'/g, "''")}'`,
+              row.descripcion_challenge ? `'${row.descripcion_challenge.replace(/'/g, "''")}'` : 'NULL',
+              row.lenguaje ? `'${row.lenguaje}'` : 'NULL',
+              row.complejidad ? `'${row.complejidad}'` : 'NULL',
+              row.nivel ? `'${row.nivel}'` : 'NULL',
+              row.solucion_challenge ? `'${row.solucion_challenge.replace(/'/g, "''")}'` : 'NULL',
+              row.code_schema ? `'${row.code_schema.replace(/'/g, "''")}'` : 'NULL',
+              row.tags ? `'${row.tags.replace(/'/g, "''")}'` : 'NULL',
+              row.imagen_url ? `'${row.imagen_url}'` : 'NULL',
+              row.video_demostracion ? `'${row.video_demostracion}'` : `'No disponible'`,
+              row.path ? `'${row.path.replace(/'/g, "''")}'` : 'NULL',
+              `datetime('${row.created_at}')`,
+              `datetime('${row.updated_at}')`
+            ].join(', ');
+            
+            backup += `INSERT INTO challenges (nombre_challenge, descripcion_challenge, lenguaje, complejidad, nivel, solucion_challenge, code_schema, tags, imagen_url, video_demostracion, path, created_at, updated_at) VALUES (${values});\n`;
+          });
+          
+          // Enviar el archivo
+          res.setHeader('Content-Type', 'application/octet-stream');
+          res.setHeader('Content-Disposition', `attachment; filename="challenges_backup_${new Date().getTime()}.sql"`);
+          res.send(backup);
+        });
+      });
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// DELETE - Limpiar todos los challenges
+app.delete('/api/admin/clear-all', (req, res) => {
+  const { confirm } = req.body;
+  
+  if (confirm !== true) {
+    return res.status(400).json({ error: 'Confirmación requerida' });
+  }
+  
+  const sql = 'DELETE FROM challenges';
+  
+  db.run(sql, function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ 
+      message: 'Todos los challenges han sido eliminados',
+      deleted: this.changes
+    });
+  });
+});
+
+// DELETE - Eliminar por lenguaje
+app.delete('/api/admin/clear-language/:language', (req, res) => {
+  const { language } = req.params;
+  const { confirm } = req.body;
+  
+  if (confirm !== true) {
+    return res.status(400).json({ error: 'Confirmación requerida' });
+  }
+  
+  const sql = 'DELETE FROM challenges WHERE lenguaje = ?';
+  
+  db.run(sql, [language], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ 
+      message: `Challenges de ${language} han sido eliminados`,
+      deleted: this.changes
+    });
+  });
+});
+
+// GET - Listar archivos de respaldo disponibles
+app.get('/api/admin/backup-files', (req, res) => {
+  const backupDir = __dirname;
+  
+  try {
+    const fileList = fs.readdirSync(backupDir);
+    const backupFiles = fileList
+      .filter(file => file.startsWith('challenges_backup_') && file.endsWith('.sql'))
+      .map(file => {
+        const fullPath = path.join(backupDir, file);
+        const stats = fs.statSync(fullPath);
+        return {
+          name: file,
+          path: fullPath,
+          size: stats.size,
+          sizeKB: (stats.size / 1024).toFixed(2),
+          modified: stats.mtime,
+          modifiedFormatted: new Date(stats.mtime).toLocaleString('es-ES')
+        };
+      })
+      .sort((a, b) => b.modified - a.modified); // Ordenar por fecha descendente
+    
+    res.json(backupFiles);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST - Restaurar desde respaldo
+app.post('/api/admin/restore', express.text({ limit: '50mb' }), (req, res) => {
+  const sqlContent = req.body;
+  
+  if (!sqlContent || sqlContent.trim().length === 0) {
+    return res.status(400).json({ error: 'Contenido del respaldo vacío' });
+  }
+  
+  try {
+    // Ejecutar el SQL usando sqlite3 command line
+    const child = spawn('sqlite3', ['./challenges.db'], {
+      cwd: __dirname,
+      stdio: ['pipe', 'pipe', 'pipe']
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    child.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    child.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    child.on('close', (code) => {
+      if (code === 0) {
+        // Recargar la base de datos para que los cambios sean visibles
+        res.json({ 
+          message: 'Respaldo restaurado exitosamente. Por favor, recarga la página.'
+        });
+      } else {
+        res.status(500).json({ 
+          error: `Error al restaurar: ${stderr || 'Error desconocido'}`,
+          code: code
+        });
+      }
+    });
+
+    child.on('error', (error) => {
+      res.status(500).json({ error: `Error al ejecutar restauración: ${error.message}` });
+    });
+
+    // Enviar el contenido SQL
+    child.stdin.write(sqlContent);
+    child.stdin.end();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET - Descargar respaldo específico
+app.get('/api/admin/backup-files/:filename', (req, res) => {
+  const { filename } = req.params;
+  
+  // Validar nombre de archivo
+  if (!filename.startsWith('challenges_backup_') || !filename.endsWith('.sql')) {
+    return res.status(400).json({ error: 'Nombre de archivo inválido' });
+  }
+  
+  const filepath = path.join(__dirname, filename);
+  
+  // Validar que el archivo está en el directorio correcto
+  if (!filepath.startsWith(__dirname)) {
+    return res.status(400).json({ error: 'Acceso denegado' });
+  }
+  
+  if (!fs.existsSync(filepath)) {
+    return res.status(404).json({ error: 'Archivo no encontrado' });
+  }
+  
+  res.download(filepath);
 });
 
 // Iniciar servidor
