@@ -248,6 +248,15 @@ app.get('/api/challenges/:id/pdf', (req, res) => {
       return res.status(404).json({ error: 'Challenge no encontrado' });
     }
 
+    // Función para limpiar texto y preservar saltos de línea
+    const cleanText = (text) => {
+      if (!text) return '';
+      return text
+        .replace(/\r\n/g, '\n') // Normalizar saltos de línea
+        .replace(/\r/g, '\n')
+        .trim();
+    };
+
     // Crear documento PDF
     const doc = new PDFDocument({
       margins: {
@@ -288,7 +297,7 @@ app.get('/api/challenges/:id/pdf', (req, res) => {
     doc.fontSize(14).font('Helvetica-Bold').fillColor('#667eea');
     doc.text('Descripción');
     doc.fontSize(11).font('Helvetica').fillColor('#333');
-    doc.text(challenge.descripcion_challenge || 'Sin descripción', {
+    doc.text(cleanText(challenge.descripcion_challenge) || 'Sin descripción', {
       align: 'left',
       width: 475
     });
@@ -298,10 +307,12 @@ app.get('/api/challenges/:id/pdf', (req, res) => {
     if (challenge.solucion_challenge) {
       doc.fontSize(14).font('Helvetica-Bold').fillColor('#667eea');
       doc.text('Solución');
-      doc.fontSize(10).font('Courier').fillColor('#333');
-      doc.text(challenge.solucion_challenge, {
-        align: 'left',
-        width: 475
+      doc.fontSize(9).font('Courier').fillColor('#333');
+      // Dividir el texto en líneas y escribir cada una
+      const cleanedSolution = cleanText(challenge.solucion_challenge);
+      const solutionLines = cleanedSolution.split('\n');
+      solutionLines.forEach(line => {
+        doc.text(line || ' ', { width: 475, continued: false });
       });
       doc.moveDown(1);
     }
@@ -310,10 +321,12 @@ app.get('/api/challenges/:id/pdf', (req, res) => {
     if (challenge.code_schema) {
       doc.fontSize(14).font('Helvetica-Bold').fillColor('#667eea');
       doc.text('Code Schema');
-      doc.fontSize(10).font('Courier').fillColor('#333');
-      doc.text(challenge.code_schema, {
-        align: 'left',
-        width: 475
+      doc.fontSize(9).font('Courier').fillColor('#333');
+      // Dividir el texto en líneas y escribir cada una
+      const cleanedSchema = cleanText(challenge.code_schema);
+      const schemaLines = cleanedSchema.split('\n');
+      schemaLines.forEach(line => {
+        doc.text(line || ' ', { width: 475, continued: false });
       });
       doc.moveDown(1);
     }
